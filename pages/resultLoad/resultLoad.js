@@ -14,33 +14,25 @@ Page({
    * 页面切换
    */
   redirectToPage: function (url) {
-
     //直接跳转至指定页面
-      var that = this
-      wx.redirectTo({
-        url: url,
-        success: function() {
-          console.log('index navigateTo url:', url)
-          that.data.keywordVal = ''
-          that.setData({
-            inputValue: ''
-          })
-        }
-      })
-    // //跳转页面后的恢复动画
-    // this.animation.translateY(0).opacity(1).step()
-    // setTimeout(function() {
-    //   this.setData({
-    //     searchAnimationData: this.animation.export()
-    //   })
-    // }.bind(this), 800)
+    var self = this
+    wx.redirectTo({
+      url: url,
+      success: function() {
+        console.log('index navigateTo url:', url)
+        self.data.keywordVal = ''
+        self.setData({
+          inputValue: ''
+        })
+      }
+    })
   },
 
   /**
    * 通过 WebSocket 连接发送消息，高级搜索
    */
   getKeywordsExtraction: function () {
-    var that = this
+    var self = this
     let keyword = app.globalData.keywordRuleVal.source_keyword
     RequestUtil.call(
       'fi_keywords_extraction', 
@@ -50,7 +42,7 @@ Page({
       function(result) {
         console.log('successCb fi_keywords_extraction', result)
         app.globalData.keywordRuleVal = result.keyword_rule;
-        that.getSocketJsonrpcMessage()
+        self.getSocketJsonrpcMessage()
       },
       function(error) {
         console.log('errorCb fi_keywords_extraction', error)
@@ -62,7 +54,7 @@ Page({
    * 通过 WebSocket 连接发送消息，获取进度
    */
   getSocketJsonrpcMessage: function () {
-    var that = this
+    var self = this
     // let get_stream = app.globalData.getStream
     let source_keyword = app.globalData.keywordRuleVal.source_keyword
     let keyword_rule = app.globalData.keywordRuleVal
@@ -87,15 +79,18 @@ Page({
           if (res.score_validate && res.title_sign_list_validate) {
             console.log('getSocketJsonrpcMessage pages/result/result')
             path = '../../pages/result/result';
-            that.redirectToPage(path)
+            self.redirectToPage(path)
           }
           // 否则getStream为false时直接显示结果列表页面
           else {
             path = '../../pages/progress/progress?stream_id=' + stream_id;
-            that.redirectToPage(path)
+            self.redirectToPage(path)
           }
         }
         else {
+          // 判断start返回值为false时直接跳转到首页
+          path = '../../pages/index/index';
+          self.redirectToPage(path)
           // wx.showModal({
           //   title: '当前服务器忙，请稍后查询',
           //   content: '',

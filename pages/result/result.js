@@ -11,6 +11,7 @@ Page({
   data: {
     resultboxAreaShowed: false,
     resultArticleLoadShowed: false,
+    resultArticleLoadNextShowed: true,
     resultArticleNoDataShowed: true,
     resultArticleFailDataShowed: true,
     pfFinalIcoShow: {
@@ -48,12 +49,18 @@ Page({
       weibo: '0'
     },
     resultArticleData: [], //定义上拉分页数据数组1
-    resultArticleData2: [], //定义上拉分页数据数组2
-    resultArticleData3: [], //定义上拉分页数据数组3
-    resultArticleData4: [], //定义上拉分页数据数组4
-    titleSignCount: 0,
+    titleSignCount: 0, //列表总条数
     skip: 1, //设置列表请求页数的值
     cacheVersion: null, //列表数据缓存版本号
+    windowHeight: 667, //
+    toView: 'inToView01',
+    map: {}, //定义一个对象用于存储列表数据不同项分类（日期排序）
+  },
+  scrollToViewFn: function (e) { 
+   this.setData({ 
+    toView: 'inToView2017-08-08' 
+   }) 
+   console.log(this.data.toView) 
   },
   /**
    * 微博、微信分类图标的点击事件，显示提示信息
@@ -97,10 +104,26 @@ Page({
   },
 
   /**
+   * 媒体观点分析点击事件，跳转到分析报告页面
+   */
+  analysisTap: function (event) {
+    console.log('analysisTap', event)
+    let keyword_rule = app.globalData.keywordRuleVal
+    keyword_rule = JSON.stringify(keyword_rule)
+    let url = '../../pages/analysisReport/analysisReport?keyword_rule=' + keyword_rule
+    wx.navigateTo({
+      url: url,
+      success: function() {
+        console.log('analysisTap url:', url)
+      }
+    })
+  },
+
+  /**
    * 通过 WebSocket 连接发送消息，获取最终分数
    */
   getScoreJsonrpc: function () {
-    var that = this
+    var self = this
     let source_keyword = app.globalData.keywordRuleVal.source_keyword
     let keyword_rule = app.globalData.keywordRuleVal
     let condition = {"keyword_rule": keyword_rule}
@@ -118,7 +141,7 @@ Page({
           // let scores = JSON.parse(result);
           let scores = result;
           // 更新页面总分、分类分数数据
-          that.setData({
+          self.setData({
             finalCrisisScore: scores.total_score,
             pfScore: scores.pf_score,
             titleSignCount: scores.title_sign_count
@@ -135,7 +158,7 @@ Page({
    * 通过 WebSocket 连接发送消息，获取列表
    */
   getTitleSignJsonrpc: function () {
-    var that = this
+    var self = this
     let keyword_rule = app.globalData.keywordRuleVal
     let skip = this.data.skip
     let source_keyword = app.globalData.keywordRuleVal.source_keyword
@@ -155,14 +178,14 @@ Page({
             let articles = result;
             // result为false显示加载失败
             if (articles.result == false) {
-              that.setData({
+              self.setData({
                 resultArticleLoadShowed: true,
                 resultArticleFailDataShowed: false
               });
             }
             // 没有列表数据显示暂无数据
             if (articles.length == 0) {
-              that.setData({
+              self.setData({
                 resultArticleLoadShowed: true,
                 resultArticleNoDataShowed: false
               });
@@ -175,7 +198,7 @@ Page({
                 articles[i].publish_at = date
               }
               try {
-                that.setData({
+                self.setData({
                   resultArticleLoadShowed: true,
                   resultArticleFailDataShowed: true,
                   resultArticleData: articles
@@ -183,18 +206,18 @@ Page({
               } catch (err) {
                 console.log(err)
               }
-              that.data.skip = skip + 100
+              self.data.skip = skip + 100
             }
           } catch (error) {
             console.log(error)
-            that.setData({
+            self.setData({
               resultArticleLoadShowed: true,
               resultArticleFailDataShowed: false
             });
           }
         }
         else {
-          that.setData({
+          self.setData({
             resultArticleLoadShowed: true,
             resultArticleFailDataShowed: false
           });
@@ -214,7 +237,7 @@ Page({
    * 这里设置当列表数据 titleSignCount 大于400条时开始第二个数组及模版接收列表数据。
    */
   loadTitleSignJsonrpc: function () {
-    var that = this
+    var self = this
     let keyword_rule = app.globalData.keywordRuleVal
     let skip = this.data.skip
     let source_keyword = app.globalData.keywordRuleVal.source_keyword
@@ -246,7 +269,7 @@ Page({
             try {
               let articles = result;
               if (result.result == false) {
-                that.setData({
+                self.setData({
                   resultArticleLoadShowed: true
                 });
                 return
@@ -256,28 +279,28 @@ Page({
                 articles[i].publish_at = date
               }
               if (listDataLength < 400) {
-                that.setData({
+                self.setData({
                   resultArticleData: resultArticleData.concat(articles),
                   resultArticleLoadShowed: true
                 });
               }
               else if (listDataLength > 399 && listDataLength < 800) {
                 try {
-                  that.setData({
+                  self.setData({
                     resultArticleData2: resultArticleData2.concat(articles),
                     resultArticleLoadShowed: true
                   });
                 } catch (err) {
                   console.log(err)
-                  that.setData({
+                  self.setData({
                     resultArticleLoadShowed: true
                   });
                 }
               }
-              that.data.skip = skip + 100
+              self.data.skip = skip + 100
             } catch (error) {
               console.log(error)
-              that.setData({
+              self.setData({
                 resultArticleLoadShowed: true
               });
             }
@@ -300,7 +323,7 @@ Page({
    */
   getCacheVersion: function () {
     console.log('result getCacheVersion')
-    let that = this
+    let self = this
     let source_keyword = app.globalData.keywordRuleVal.source_keyword
     let keyword_rule = app.globalData.keywordRuleVal
     let condition = {"keyword_rule": keyword_rule}
@@ -329,11 +352,11 @@ Page({
               cancelSnackBarTap: 'cancelSnackBarTap'
             })
             // 更新列表数据版本号
-            that.data.cacheVersion = result.version
+            self.data.cacheVersion = result.version
           }
         }else {
           // 缓存当前列表数据版本号
-          that.data.cacheVersion = result.version
+          self.data.cacheVersion = result.version
         }
       },
       function(error) {
@@ -369,8 +392,7 @@ Page({
     this.data.skip = 1;
     this.setData({
       resultArticleLoadShowed: false,
-      resultArticleData: [],
-      resultArticleData2: []
+      resultArticleData: []
     });
     // 获取带时间排序的列表
     this.getTitleSignListJsonrpc()
@@ -404,10 +426,11 @@ Page({
    * 通过 WebSocket 连接发送消息，获取
    */
   getTitleSignListJsonrpc: function () {
-    var that = this
+    var self = this
     let source_keyword = app.globalData.keywordRuleVal.source_keyword
+    let skip = this.data.skip
     let keyword_rule = app.globalData.keywordRuleVal
-    let condition = {"keyword_rule": keyword_rule, "sort": 'day'}
+    let condition = {"keyword_rule": keyword_rule, "skip": skip, "sort": 'default'}
     let openid = app.globalData.openid
     console.log(openid)
     RequestUtil.call(
@@ -418,13 +441,21 @@ Page({
         "document_id": openid
       }, 
       function(res) {
-        console.log('getTitleSignListJsonrpc successCb', res)
-        that.data.stream_id = res.stream_id
-        // 开启订阅Jsonstream结果
-        that.subscribeJsonstream(res.stream_id)
+        console.log('getTitleSignListJsonrpc successCb:', res)
+        // 判断是否为jsonstream数据类型带stream_id，或result直接返回列表数据结果。
+        if (res.stream_id) {
+          console.log('getTitleSignListJsonrpc stream_id:', res.stream_id)
+          self.data.stream_id = res.stream_id
+          // 开启订阅Jsonstream结果
+          self.subscribeJsonstream(res.stream_id)
+        } else {
+          console.log('getTitleSignListJsonrpc directionResult')
+          // 直接返回了result列表jsonrpc数据结果，直接调用jsonrpc数据处理
+          self.jsonrpcDataFormat(res)
+        }
       },
       function(res) {
-        console.log('getTitleSignListJsonrpc errorCb', res)
+        console.log('getTitleSignListJsonrpc errorCb:', res)
       }
     );
   },
@@ -433,9 +464,9 @@ Page({
    * 订阅Jsonstream进度
    */
   subscribeJsonstream: function (streamId) {
-    var that = this
+    var self = this
     let stream_id = streamId
-    console.log('subscribeJsonstream stream_id:',stream_id)
+    console.log('result subscribeJsonstream stream_id:',stream_id)
     RequestUtil.subscribeJsonStream(
       stream_id,
       function(begin) {
@@ -452,77 +483,271 @@ Page({
       },
       function(result) {
         console.log('result data', result);
-        if (result) {
-          try {
-            let articles = result.data.title_sign_list;
-            // result为false显示加载失败
-            if (result.data.result == false) {
-              that.setData({
-                resultArticleLoadShowed: true,
-                resultArticleFailDataShowed: false
-              });
-              return
-            }
-            // 没有列表数据显示暂无数据
-            if (articles.length == 0) {
-              that.setData({
-                resultArticleLoadShowed: true,
-                resultArticleNoDataShowed: false
-              });
-            }
-            // 正常显示列表数据
-            if (articles.length > 0) {
-              // articles = articles.slice(0, 100);
-              // json数组数据分类分组处理
-              let map = {}, //定义一个对象用于存储不同项分类
-                  dest = []; //定义一个数组用于存储分类分组后的数组
-              // 遍历json数组中每一个对象数据
-              for (let i = 0; i < articles.length; i++) {
-                let art_i = articles[i];
-                // 将发布时间中带00:00:00的过滤，只显示到年月日
-                art_i.publish_at = art_i.publish_at.replace('00:00:00', '')
-                // 判断是否为新的分类
-                if (!map[art_i.publish_date]) {
-                  // 存入新的一类数据
-                  dest.push({
-                    publish_date: art_i.publish_date,
-                    data: [art_i]
-                  });
-                  // 把新的不同分类判断的存入map
-                  map[art_i.publish_date] = art_i;
-                } else {
-                  // 将相同的存入对应一组分类中
-                  for (let j = 0; j < dest.length; j++) {
-                    let dj = dest[j];
-                    if (dj.publish_date == art_i.publish_date) {
-                      dj.data.push(art_i);
-                      break;
-                    }
-                  }
-                }
-              }
-              try {
-                that.setData({
-                  resultArticleLoadShowed: true,
-                  resultArticleFailDataShowed: true,
-                  resultArticleData: dest
-                });
-              } catch (err) {
-                console.log(err)
-              }
-            }
-            console.log('articles:', dest)
-          } catch (error) {
-            console.log(error)
-          }
-        } else {
-          that.setData({
+        // jsonstream列表数据处理
+        self.jsonstreamDataFormat(result)
+      }
+    )
+  },
+
+  /**
+   * jsonstream列表数据处理
+   */
+  jsonstreamDataFormat: function (result) {
+    var self = this
+    if (result) {
+      try {
+        let articles = result.data.title_sign_list;
+        // result为false显示加载失败
+        if (result.data.result == false) {
+          self.setData({
             resultArticleLoadShowed: true,
             resultArticleFailDataShowed: false
           });
+          return
         }
+        // 没有列表数据显示暂无数据
+        if (articles.length == 0) {
+          self.setData({
+            resultArticleLoadShowed: true,
+            resultArticleNoDataShowed: false
+          });
+        }
+        // 正常显示列表数据
+        if (articles.length > 0) {
+          // articles = articles.slice(0, 100);
+          // 截取时间，只显示到年月日
+          for (var i = 0; i < articles.length; i++) {
+            let date = articles[i].publish_at.slice(0, 10)
+            articles[i].publish_at = date
+          }
+          // json数组数据分类分组处理
+          let map = {} //定义一个对象用于存储不同项分类
+          let dest = [] //定义一个数组用于存储分类分组后的数组
+          // 遍历json数组中每一个对象数据
+          for (let i = 0; i < articles.length; i++) {
+            let art_i = articles[i];
+            // 将发布时间中带00:00:00的过滤，只显示到年月日
+            art_i.publish_at = art_i.publish_at.replace('00:00:00', '')
+            // 判断是否为新的分类
+            if (!map[art_i.publish_at]) {
+              // 存入新的一类数据
+              dest.push({
+                publish_at: art_i.publish_at,
+                data: [art_i]
+              });
+              // 把新的不同分类判断的存入map
+              map[art_i.publish_at] = art_i;
+            } else {
+              // 将相同的存入对应一组分类中
+              for (let j = 0; j < dest.length; j++) {
+                let dj = dest[j];
+                if (dj.publish_at == art_i.publish_at) {
+                  dj.data.push(art_i);
+                  break;
+                }
+              }
+            }
+          }
+          try {
+            self.setData({
+              resultArticleLoadShowed: true,
+              resultArticleFailDataShowed: true,
+              resultArticleData: dest
+            });
+          } catch (err) {
+            console.log(err)
+          }
+          console.log('articles:', dest)
+        }
+      } catch (error) {
+        console.log(error)
       }
-    )
+    } else {
+      self.setData({
+        resultArticleLoadShowed: true,
+        resultArticleFailDataShowed: false
+      });
+    }
+  },
+  
+  /**
+   * jsonrpc列表数据处理
+   */
+  jsonrpcDataFormat: function (result) {
+    var self = this
+    try {
+      let articles = result;
+      // result为false显示加载失败
+      // if (result.data.result == false) {
+      //   self.setData({
+      //     resultArticleLoadShowed: true,
+      //     resultArticleFailDataShowed: false
+      //   });
+      //   return
+      // }
+      // 没有列表数据显示暂无数据
+      if (articles.length == 0) {
+        this.setData({
+          resultArticleLoadShowed: true,
+          resultArticleNoDataShowed: false
+        });
+      }
+      // 正常显示列表数据
+      if (articles.length > 0) {
+        // json数组数据分类分组处理
+        let map = {} //定义一个对象用于存储不同项分类
+        let dest = [] //定义一个数组用于存储分类分组后的数组
+        // 遍历json数组中每一个对象数据
+        for (let i = 0; i < articles.length; i++) {
+          let art_i = articles[i];
+          // 判断是否为新的分类
+          if (!map[art_i.publish_at]) {
+            // 存入新的一类数据
+            dest.push({
+              publish_at: art_i.publish_at,
+              data: [art_i]
+            });
+            // 把新的不同分类判断的存入map
+            map[art_i.publish_at] = art_i;
+          } else {
+            // 将相同的存入对应一组分类中
+            for (let j = 0; j < dest.length; j++) {
+              let dj = dest[j];
+              if (dj.publish_at == art_i.publish_at) {
+                dj.data.push(art_i);
+                break;
+              }
+            }
+          }
+        }
+        // 更新用于存储列表不同项分类的数据
+        this.data.map = map
+        // 更新页面数据
+        try {
+          this.setData({
+            resultArticleLoadShowed: true,
+            resultArticleFailDataShowed: true,
+            resultArticleData: dest
+          });
+        } catch (err) {
+          console.log(err)
+        }
+        console.log('articles:', dest)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  },
+
+  /**
+   * 通过 WebSocket 连接发送消息，获取
+   */
+  getTitleSignListJsonrpcNext: function () {
+    var self = this
+    let source_keyword = app.globalData.keywordRuleVal.source_keyword
+    let skip = this.data.skip + 100
+    // 更新列表页码数据
+    this.data.skip = skip
+    let keyword_rule = app.globalData.keywordRuleVal
+    let condition = {"keyword_rule": keyword_rule, "skip": skip, "sort": 'default'}
+    let openid = app.globalData.openid
+    console.log(openid)
+    // 
+    this.setData({
+      resultArticleLoadNextShowed: false
+    });
+    // 
+    RequestUtil.call(
+      'fi_title_sign_list', 
+      {
+        "keyword": source_keyword,
+        "condition": condition,
+        "document_id": openid
+      }, 
+      function(res) {
+        console.log('getTitleSignListJsonrpcNext successCb:', res)
+        // 判断是否为jsonstream数据类型带stream_id，或result直接返回列表数据结果。
+        if (res.stream_id) {
+          console.log('getTitleSignListJsonrpcNext stream_id:', res.stream_id)
+          self.data.stream_id = res.stream_id
+          // 开启订阅Jsonstream结果
+          self.subscribeJsonstream(res.stream_id)
+        } else {
+          console.log('getTitleSignListJsonrpcNext directionResult')
+          if (res.result == false) {
+            self.setData({
+              resultArticleLoadNextShowed: true
+            });
+          } else {
+            // 直接返回了result列表jsonrpc数据结果，直接调用jsonrpc数据处理
+            self.jsonrpcDataFormatNext(res)
+          }
+        }
+      },
+      function(res) {
+        console.log('getTitleSignListJsonrpcNext errorCb:', res)
+      }
+    );
+  },
+
+  /**
+   * jsonrpc分页列表数据处理
+   */
+  jsonrpcDataFormatNext: function (res) {
+    var self = this
+    let resultArticleData = this.data.resultArticleData
+    try {
+      let articles = res;
+      // 正常显示列表数据
+      if (articles.length > 0) {
+        // json数组数据分类分组处理
+        let map = this.data.map //定义一个对象用于存储不同项分类
+        let dest = resultArticleData //定义一个数组用于存储分类分组后的数组
+        // 遍历json数组中每一个对象数据
+        for (let i = 0; i < articles.length; i++) {
+          let art_i = articles[i];
+          // 判断是否为新的分类
+          if (!map[art_i.publish_at]) {
+            // 存入新的一类数据
+            dest.push({
+              publish_at: art_i.publish_at,
+              data: [art_i]
+            });
+            // 把新的不同分类判断的存入map
+            map[art_i.publish_at] = art_i;
+          } else {
+            // 将相同的存入对应一组分类中
+            for (let j = 0; j < dest.length; j++) {
+              let dj = dest[j];
+              if (dj.publish_at == art_i.publish_at) {
+                dj.data.push(art_i);
+                break;
+              }
+            }
+          }
+        }
+        // 更新用于存储列表不同项分类的数据
+        this.data.map = map
+        // 更新页面列表数据
+        try {
+          this.setData({
+            resultArticleLoadNextShowed: true,
+            resultArticleData: dest
+          });
+        } catch (err) {
+          console.log(err)
+          this.setData({
+            resultArticleLoadNextShowed: true
+          });
+        }
+        console.log('articles:', dest)
+      }
+    } catch (error) {
+      console.log(error)
+      this.setData({
+        resultArticleLoadNextShowed: true
+      });
+    }
   },
 
   /**
@@ -531,6 +756,10 @@ Page({
   onLoad: function (options) {
     console.log('result onLoad')
     console.log(options)
+    // 设置可滚动视图区域高度为设备可使用设备窗口高度
+    // this.setData({
+    //   windowHeight: app.globalData.systemInfo.windowHeight
+    // })
     // this.data.keywordVal = decodeURIComponent(options.keywordVal)
   },
 
@@ -565,7 +794,6 @@ Page({
     this.detectCacheVersion()
     // 获取带时间排序的列表
     this.getTitleSignListJsonrpc()
-
   },
 
   /**
@@ -608,11 +836,20 @@ Page({
   onReachBottom: function () {
     console.log('result onReachBottom')
     let resultArticleData = this.data.resultArticleData
-    // 上拉刷新列表
-    // if (resultArticleData.length > 0) {
-    //   this.loadTitleSignJsonrpc()
-    // }
+    let skip = this.data.skip
+    let titleSignCount = this.data.titleSignCount
+    let resultArticleDataCount = 0
+    // 计算页面列表条数
+    for (var i = 0; i < resultArticleData.length; i++) {
+      resultArticleDataCount += resultArticleData[i].data.length
+    }
+    // 上拉刷新，加载分页列表
+    if (resultArticleData.length > 0 && skip < 500 && resultArticleDataCount < titleSignCount) {
+      // this.loadTitleSignJsonrpc()
+      this.getTitleSignListJsonrpcNext()
+    }
   },
+
   /**
    * 用户点击右上角分享
    */

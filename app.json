@@ -2,11 +2,11 @@
   "pages": [
     "pages/index/index",
     "pages/account/account",
-    "pages/crisis/crisis",
     "pages/article/article",
     "pages/progress/progress",
     "pages/result/result",
-    "pages/resultLoad/resultLoad"
+    "pages/resultLoad/resultLoad",
+    "pages/analysisReport/analysisReport"
   ],
   "window": {
     "backgroundTextStyle": "dark",

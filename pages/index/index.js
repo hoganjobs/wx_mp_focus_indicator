@@ -12,9 +12,40 @@ Page({
     searchAnimationData: {},
     hotKeywordArray: [],
     globalData: app.globalData.globaldata,
-    keyword_rule: ''
+    keyword_rule: '',
+    inputValue: ''
   },
-
+  /**
+   * PhoneNumber解码，获取用户手机号码
+   */
+  // getPhoneNumber: function(e) { 
+  //   console.log(e.detail.errMsg) 
+  //   console.log(e.detail.iv) 
+  //   console.log(e.detail.encryptedData)
+  //   var self = this
+  //   let hostname = app.globalData.hostname
+  //   let session_key = app.globalData.session_key
+  //   let phoneNumberEncryptedData = e.detail.encryptedData
+  //   let phoneNumberIv = e.detail.iv
+  //   let url = 'https://' + hostname + '/api/v1/decrypt'
+  //   let data = {
+  //     app: 'focus-indicator',
+  //     session_key: session_key,
+  //     encrypted_data: phoneNumberEncryptedData,
+  //     iv: phoneNumberIv
+  //   }
+  //   // 发起网络请求，上传session_key、shareInfoEncryptedData等信息
+  //   wx.request({
+  //     url: url,
+  //     method: 'POST',
+  //     data: data,
+  //     success: function(res) {
+  //       console.log('getPhoneNumber request url:',url)
+  //       console.log('getPhoneNumber request data:',data)
+  //       console.log('getPhoneNumber解码网络请求成功', res)
+  //     }
+  //   })
+  // },
   /**
    * 底部点击执行指定页面跳转，开发过程测试使用
    */
@@ -31,7 +62,10 @@ Page({
    */
   inputTyping: function(event) {
     console.log(event.detail.value)
+    // 更新查询关键词，全局
     app.globalData.keywordVal = event.detail.value
+    // 更新查询关键词，当前页面
+    this.data.inputValue = event.detail.value
   },
   /**
    * 事件处理函数--点击时获取输入关键词后跳转页面
@@ -39,7 +73,7 @@ Page({
   startSearchTap: function() {
     console.log('index startSearchTap')
     //判断用户输入是否为空
-    if (app.globalData.keywordVal == '') {
+    if (this.data.inputValue == '') {
       console.log('keywordVal')
       wx.showModal({
         title: '请输入要查询的关键词',
@@ -56,7 +90,7 @@ Page({
       return false;
     }
     //判断用户输入是否为单个字
-    if (app.globalData.keywordVal.length == 1) {
+    if (this.data.inputValue.length == 1) {
       console.log('keywordVal')
       wx.showModal({
         title: '请输入正确长度的关键词',
@@ -84,6 +118,7 @@ Page({
     console.log(e.currentTarget.dataset.index)
     console.log('index hotSearch')
     app.globalData.keywordVal = e.currentTarget.dataset.index
+    this.data.inputValue = e.currentTarget.dataset.index
     this.startSearchTap()
   },
 
@@ -105,13 +140,13 @@ Page({
 
     //延时后直接跳转至指定页面
     setTimeout(function() {
-      var that = this
+      var self = this
       wx.navigateTo({
         url: url,
         success: function() {
           console.log('index navigateTo url:', url)
-          that.data.keywordVal = ''
-          that.setData({
+          self.data.keywordVal = ''
+          self.setData({
             inputValue: ''
           })
         }
@@ -132,7 +167,7 @@ Page({
   clearRecordsTap: function () {
     console.log('index clearRecordsTap')
     let keywordRecords = []
-    let that = this
+    let self = this
     wx.showModal({
       title: '请确认，是否要清空搜索历史？',
       content: '',
@@ -144,7 +179,7 @@ Page({
             key:"keyword",
             data: keywordRecords
           })
-          that.setData({
+          self.setData({
             keywordRecords: []
           })
         } else if (res.cancel) {
@@ -158,7 +193,7 @@ Page({
    * wx.request获取排行关键词
    */
   // keywordRequest: function () {
-  //   var that = this
+  //   var self = this
   //   let hostname = app.globalData.hostname
   //   // let url = 'https://wxapp.ibiliang.com/focus-indicator/api/crisis/v1/keyword/rank?num='
   //   let url = 'https://' + hostname + '/focus-indicator/api/crisis/v1/keyword/rank?num='
@@ -171,7 +206,7 @@ Page({
   //       console.log('keywordRequest url:', url)
   //       if (res.statusCode == 200) {
   //         console.log('获取到排行关键词: ' + res.data.keywords)
-  //         that.setData({
+  //         self.setData({
   //           hotKeywordArray: res.data.keywords
   //         })
   //       }
@@ -187,7 +222,7 @@ Page({
    */
   getKeywordStorage: function() {
     console.log('getKeywordStorage')
-    let that = this;
+    let self = this;
     // 从本地缓存中异步获取指定 key 对应的内容。
     wx.getStorage({
       key: 'keyword',
@@ -203,7 +238,7 @@ Page({
             data: res.data
           })
         }
-        that.setData({
+        self.setData({
           keywordRecords: res.data
         })
       },
@@ -266,7 +301,7 @@ Page({
    */
   getSearchHistoryStorage: function(keywordVal) {
     console.log('getSearchHistoryStorage')
-    let that = this;
+    let self = this;
     let currTime = new Date().getTime()
     let searchRecords;
     app.globalData.getStream = true;
@@ -296,7 +331,7 @@ Page({
           }
         }
         // 通过WebSocket 连接发送消息，高级搜索
-        that.getKeywordsExtraction()
+        self.getKeywordsExtraction()
       },
       complete: function(res) {
         console.log('get searchHistoryStorage complete', res)
@@ -316,7 +351,7 @@ Page({
    * 通过 WebSocket 连接发送消息，高级搜索
    */
   getKeywordsExtraction: function () {
-    var that = this
+    var self = this
     let keyword = app.globalData.keywordVal
     let openid = app.globalData.openid
     RequestUtil.call(
@@ -329,7 +364,7 @@ Page({
         console.log('successCb fi_keywords_extraction', result)
         app.globalData.keywordRuleVal = result.keyword_rule;
         // 通过 WebSocket 连接发送消息，获取进度
-        that.getSocketJsonrpcMessage()
+        self.getSocketJsonrpcMessage()
       },
       function(error) {
         console.log('errorCb fi_keywords_extraction', error)
@@ -341,7 +376,7 @@ Page({
    * 通过 WebSocket 连接发送消息，获取进度
    */
   getSocketJsonrpcMessage: function () {
-    var that = this
+    var self = this
     let get_stream = app.globalData.getStream
     let source_keyword = app.globalData.keywordRuleVal.source_keyword
     let keyword_rule = app.globalData.keywordRuleVal
@@ -366,12 +401,12 @@ Page({
           if (!get_stream && res.score_validate && res.title_sign_list_validate) {
             console.log('getSocketJsonrpcMessage pages/result/result')
             path = '../../pages/result/result';
-            that.navigateToPage(path)
+            self.navigateToPage(path)
           }
           // 否则getStream为false时直接显示结果列表页面
           else {
             path = '../../pages/progress/progress?stream_id=' + stream_id;
-            that.navigateToPage(path)
+            self.navigateToPage(path)
           }
         }
         else {
@@ -400,7 +435,7 @@ Page({
    */
   versionlongtap: function () {
     console.log('index versionlongtap')
-    var that = this
+    var self = this
     let version = app.globalData.version
     let content = '比量科技“焦点风向标”小程序，当前版本 v' + version
     wx.showModal({
@@ -429,6 +464,7 @@ Page({
    */
   onReady: function () {
     console.log('index onReady')
+
   },
 
   /**
@@ -436,10 +472,26 @@ Page({
    */
   onShow: function () {
     console.log('index onShow')
-    let that = this
+    let self = this
     // 修改app全局变量传入为当前页面的标题
-    app.globalData.NavigationBarTitle = '焦点风向标';
+    // app.globalData.NavigationBarTitle = '焦点风向标';
 
+    //动态设置当前页面导航条的标题
+    let navTitle = '焦点风向标'
+    wx.setNavigationBarTitle({
+      title: navTitle,
+      success: function (res) {
+      console.log('success index navTitle:', res)
+      console.log('index navTitle:', navTitle)
+      // 修改app全局变量传入为当前页面的标题
+      app.globalData.NavigationBarTitle = navTitle;
+      // console.log('app.globalData.NavigationBarTitle:', app.globalData.NavigationBarTitle)
+      },
+      fail: function(err) {
+        console.log('fail index navTitle:', err)
+      }
+    });
+    
     // 获取查询历史storage
     this.getKeywordStorage();
     // 用户查询的关键词记录

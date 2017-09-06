@@ -11,37 +11,37 @@ App({
     // logs.unshift(Date.now())
     // wx.setStorageSync('logs', logs)
     console.log('app onLaunch:', options)
-    var that = this 
+    var self = this //指代本作用域的对象
     // 获取转发信息
     wx.getShareInfo({
       shareTicket: options.shareTicket,
       success: function (res) {
         console.log('getShareInfo success:', res)
         // 更新globalData数据
-        that.globalData.shareInfoEncryptedData = res.encryptedData;
-        that.globalData.shareInfoIv = res.iv;
+        self.globalData.shareInfoEncryptedData = res.encryptedData;
+        self.globalData.shareInfoIv = res.iv;
       },
       fail: function (fail) {
         console.log('getShareInfo fail', fail)
       }
     });
     // 获取新的用户登录态
-    wx.login({
-      success: function(res) {
-        console.log(res)
-        if (res.code) {
-          // 更新globalData的用户code
-          that.globalData.userCode = res.code;
-          // 获取系统信息
-          that.getSystemInfo()
-          // 获取用户信息，完成后调用getLoginInfo()服务端登录接口，以提交信息和获取分配的websocket访问路径、openid等信息
-          that.getWxUserInfo()
-          console.log('获取用户登录态成功！ code: ' + res.code)
-        } else {
-          console.log('获取用户登录态失败！' + res.errMsg)
-        }
-      }
-    });
+    // wx.login({
+    //   success: function(res) {
+    //     console.log(res)
+    //     if (res.code) {
+    //       // 更新globalData的用户code
+    //       self.globalData.userCode = res.code;
+    //       // 获取系统信息
+    //       self.getSystemInfo()
+    //       // 获取用户信息，完成后调用getLoginInfo()服务端登录接口，以提交信息和获取分配的websocket访问路径、openid等信息
+    //       self.getWxUserInfo()
+    //       console.log('获取用户登录态成功！ code: ' + res.code)
+    //     } else {
+    //       console.log('获取用户登录态失败！' + res.errMsg)
+    //     }
+    //   }
+    // });
 
     // 检测当前用户登录态是否有效
     wx.checkSession({
@@ -57,7 +57,7 @@ App({
             console.log(res)
             if (res.code) {
               console.log('获取用户登录态成功！ code: ' + res.code)
-              that.globalData.userCode = res.code;
+              self.globalData.userCode = res.code;
             } else {
               console.log('获取用户登录态失败！' + res.errMsg)
             }
@@ -85,7 +85,7 @@ App({
     webSocketOpen: false, //websocket是否连接的标志
     hostname: 'star.ibiliang.com',
     // hostname: 'wxapp.ibiliang.com',
-    version: '0.17.0824', //websockt服务服务端匹配的版本
+    version: '0.17.0905', //websockt服务服务端匹配的版本
     wsUrl: false, //用于保存服务端分配的websocket访问路径
     keywordVal: '', // 查询的关键词
     keywordRuleVal: '', // 用于保存服务端返回keyword_rule的值
@@ -96,14 +96,31 @@ App({
    * 生命周期函数--监听页面显示
    */
   onShow: function (options) {
-    var that = this
+    var self = this
     let ws_url = this.globalData.wsUrl
     // 存入场景值
     this.globalData.scene = options.scene
     // 连接打开websocket
-    if (ws_url) {
-      this.webSocketClientConnect(ws_url);
-    }
+    // if (ws_url) {
+    //   this.webSocketClientConnect(ws_url);
+    // }
+    // 获取新的用户登录态
+    wx.login({
+      success: function(res) {
+        console.log(res)
+        if (res.code) {
+          // 更新globalData的用户code
+          self.globalData.userCode = res.code;
+          // 获取系统信息
+          self.getSystemInfo()
+          // 获取用户信息，完成后调用getLoginInfo()服务端登录接口，以提交信息和获取分配的websocket访问路径、openid等信息
+          self.getWxUserInfo()
+          console.log('获取用户登录态成功！ code: ' + res.code)
+        } else {
+          console.log('获取用户登录态失败！' + res.errMsg)
+        }
+      }
+    });
     // 
     console.log('打开小程序的路径:', options.path);
     console.log('打开小程序的query:', options.query);
@@ -131,7 +148,7 @@ App({
    * 获取用户信息, 调用该方法返回用户信息
    */
   getUserInfo: function(cb) {
-    var that = this
+    var self = this
     if (this.globalData.userInfo) {
       typeof cb == "function" && cb(this.globalData.userInfo)
     } else {
@@ -140,8 +157,8 @@ App({
         withCredentials: true,
         success: function(res) {
           console.log('getUserInfo 获取用户信息:', res)
-          that.globalData.userInfo = res.userInfo
-          typeof cb == "function" && cb(that.globalData.userInfo)
+          self.globalData.userInfo = res.userInfo
+          typeof cb == "function" && cb(self.globalData.userInfo)
         }
       })
     }
@@ -151,17 +168,17 @@ App({
    * 获取用户信息
    */
   getWxUserInfo: function(cb) {
-    var that = this
+    var self = this
     //调用登录接口
     wx.getUserInfo({
       withCredentials: true,
       success: function(res) {
         console.log('getUserInfo 获取用户信息:', res)
-        that.globalData.userInfo = res.userInfo
-        that.globalData.encryptedData = res.encryptedData
-        that.globalData.iv = res.iv
+        self.globalData.userInfo = res.userInfo
+        self.globalData.encryptedData = res.encryptedData
+        self.globalData.iv = res.iv
         // 
-        that.getLoginInfo()
+        self.getLoginInfo()
       }
     })
   },
@@ -170,12 +187,12 @@ App({
    * 获取系统信息
    */
   getSystemInfo: function() {
-    var that = this
+    var self = this
     //调用系统信息接口
     wx.getSystemInfo({
       success: function(res) {
         console.log('getSystemInfo 获取系统信息:', res)
-        that.globalData.systemInfo = res;
+        self.globalData.systemInfo = res;
         // console.log('获取系统信息成功:', res)
         // console.log('手机型号:', res.model)
         // console.log('设备像素比:', res.pixelRatio)
@@ -193,7 +210,7 @@ App({
    *  初始化登录接口,提交相关信息,获取分配的websocket访问路径、openid等信息
    */
   getLoginInfo: function() {
-    var that = this
+    var self = this
     let userCode = this.globalData.userCode
     let hostname = this.globalData.hostname
     let version = this.globalData.version
@@ -229,18 +246,18 @@ App({
         console.log('js_code网络请求成功 encrypted_data:', base64.decode(encrypted_data))
 
         // 获取分配websocket的URL路径
-        that.globalData.wsUrl = res.data.ws_url;
+        self.globalData.wsUrl = res.data.ws_url;
         // 获取openid
-        that.globalData.openid = res.data.data.openid
+        self.globalData.openid = res.data.data.openid
         // 获取session_key
-        that.globalData.session_key = res.data.data.session_key
+        self.globalData.session_key = res.data.data.session_key
         // unionid解码接口调用
-        that.getUnionid()
+        self.getUnionid()
         // OpenGId解码接口调用
-        that.getOpenGId()
+        self.getOpenGId()
         if (res.data.ws_url) {
           // 启动websocket客户端连接
-          that.webSocketClientConnect(res.data.ws_url);
+          self.webSocketClientConnect(res.data.ws_url);
         }
       }
     })
@@ -250,7 +267,7 @@ App({
    * unionid解码
    */
   getUnionid: function() {
-    var that = this
+    var self = this
     let hostname = this.globalData.hostname
     let session_key = this.globalData.session_key
     let encryptedData = this.globalData.encryptedData
@@ -280,7 +297,7 @@ App({
    * OpenGId解码
    */
   getOpenGId: function() {
-    var that = this
+    var self = this
     let hostname = this.globalData.hostname
     let session_key = this.globalData.session_key
     let shareInfoEncryptedData = this.globalData.shareInfoEncryptedData
@@ -310,7 +327,7 @@ App({
    */
   webSocketClientConnect: function (ws_url) {
     console.log('webSocketClientConnect')
-    var that = this
+    var self = this
     let hostname = this.globalData.hostname
     // let url = 'wss://star.ibiliang.com' + ws_url
     let url = 'wss://' + hostname + ws_url
@@ -319,14 +336,14 @@ App({
         //onSocketOpen，连接成功
         console.log('connect success, onSocketOpen.');
         console.log('websocket url:', url);
-        // that.globalData.webSocketOpen = true;
-        let onlineTitle = that.globalData.NavigationBarTitle
+        // self.globalData.webSocketOpen = true;
+        let onlineTitle = self.globalData.NavigationBarTitle
         //动态设置当前页面导航条的标题
         wx.setNavigationBarTitle({
           title: onlineTitle,
           success: function (res) {
           console.log('success app navTitle:', res)
-          console.log('app navTitle:', onlineTitle)
+          console.log('online app navTitle:', onlineTitle)
           },
           fail: function(err) {
             console.log('fail app navTitle:', err)
@@ -336,19 +353,19 @@ App({
       function(res) {
         //onSocketError，连接错误
         console.log('connect fail, onSocketError.', res);
-        // that.globalData.webSocketOpen = false;
+        // self.globalData.webSocketOpen = false;
       },
       function(res) {
         //onSocketClose，连接关闭
         console.log('connect close, onSocketClose.', res);
-        // that.globalData.webSocketOpen = false;
-        let outlineTitle = that.globalData.NavigationBarTitle + '（离线）'
+        // self.globalData.webSocketOpen = false;
+        let outlineTitle = self.globalData.NavigationBarTitle + '（离线）'
         //动态设置当前页面导航条的标题
         wx.setNavigationBarTitle({
           title: outlineTitle,
           success: function (res) {
           console.log('success app navTitle:', res)
-          console.log('app navTitle:', outlineTitle)
+          console.log('outline app navTitle:', outlineTitle)
           },
           fail: function(err) {
             console.log('fail app navTitle:', err)

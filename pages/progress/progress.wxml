@@ -29,56 +29,56 @@
           <view class="pz_list_unstyled">
             <view class="pz_checklistr_item">
               <view class="pz_checklistr_item_box">
-                <view class="pz_checklistr_item_cir" style="{{productFormStyle.portals}};">
-                  <image class="pz_checklistr_item_ico" hidden="{{pfIcoShow.portals}}" mode="scaleToFill" src="../../image/{{productFormIco.portals}}"></image>
-                  <view class="pz_checklistr_score" hidden="{{!pfIcoShow.portals}}">{{productFormScore.portals}}</view>
+                <view class="pz_checklistr_item_cir" style="{{(productFormScore.portals > 0 || jsonstreamEnd) ? 'border-color: #FFFFFF;' : ''}};">
+                  <image class="pz_checklistr_item_ico" hidden="{{(productFormScore.portals > 0 || jsonstreamEnd)}}" mode="scaleToFill" src="../../image/{{productFormIco.portals}}"></image>
+                  <view class="pz_checklistr_score" hidden="{{!(productFormScore.portals > 0 || jsonstreamEnd)}}">{{productFormScore.portals}}<view class="pz_checklistr_uint" wx:if="{{unitShowed.portals}}">万</view></view>
                 </view>
-                <view class="pz_checklistr_item_name" style="{{productFormNameStyle.portals}};">门户网媒</view>
+                <view class="pz_checklistr_item_name" style="{{(productFormScore.portals > 0 || jsonstreamEnd) ? 'color: #FFFFFF;' : ''}};">门户网媒</view>
               </view>
             </view>
             <view class="pz_checklistr_item">
               <view class="pz_checklistr_item_box">
-                <view class="pz_checklistr_item_cir" style="{{productFormStyle.search_engine}};">
-                  <image class="pz_checklistr_item_ico" hidden="{{pfIcoShow.search_engine}}" mode="scaleToFill" src="../../image/{{productFormIco.search_engine}}"></image>
-                  <view class="pz_checklistr_score" hidden="{{!pfIcoShow.search_engine}}">{{productFormScore.search_engine}}</view>
+                <view class="pz_checklistr_item_cir" style="{{(productFormScore.search_engine > 0 || jsonstreamEnd) ? 'border-color: #FFFFFF;' : ''}};">
+                  <image class="pz_checklistr_item_ico" hidden="{{(productFormScore.search_engine > 0 || jsonstreamEnd)}}" mode="scaleToFill" src="../../image/{{productFormIco.search_engine}}"></image>
+                  <view class="pz_checklistr_score" hidden="{{!(productFormScore.search_engine > 0 || jsonstreamEnd)}}">{{productFormScore.search_engine}}<view class="pz_checklistr_uint" wx:if="{{unitShowed.search_engine}}">万</view></view>
                 </view>
-                <view class="pz_checklistr_item_name" style="{{productFormNameStyle.search_engine}};">搜索引擎</view>
+                <view class="pz_checklistr_item_name" style="{{(productFormScore.search_engine > 0 || jsonstreamEnd) ? 'color: #FFFFFF;' : ''}};">搜索引擎</view>
               </view>
             </view>
             <view class="pz_checklistr_item">
               <view class="pz_checklistr_item_box">
-                <view class="pz_checklistr_item_cir" style="{{productFormStyle.bbs}};">
-                  <image class="pz_checklistr_item_ico" hidden="{{pfIcoShow.bbs}}" mode="scaleToFill" src="../../image/{{productFormIco.bbs}}"></image>
-                  <view class="pz_checklistr_score" hidden="{{!pfIcoShow.bbs}}">{{productFormScore.bbs}}</view>
+                <view class="pz_checklistr_item_cir" style="{{(productFormScore.bbs > 0 || jsonstreamEnd) ? 'border-color: #FFFFFF;' : ''}};">
+                  <image class="pz_checklistr_item_ico" hidden="{{(productFormScore.bbs > 0 || jsonstreamEnd)}}" mode="scaleToFill" src="../../image/{{productFormIco.bbs}}"></image>
+                  <view class="pz_checklistr_score" hidden="{{!(productFormScore.bbs > 0 || jsonstreamEnd)}}">{{productFormScore.bbs}}<view class="pz_checklistr_uint" wx:if="{{unitShowed.bbs}}">万</view></view>
                 </view>
-                <view class="pz_checklistr_item_name" style="{{productFormNameStyle.bbs}};">论坛贴吧</view>
+                <view class="pz_checklistr_item_name" style="{{(productFormScore.bbs > 0 || jsonstreamEnd) ? 'color: #FFFFFF;' : ''}};">论坛贴吧</view>
               </view>
             </view>
             <view class="pz_checklistr_item">
               <view class="pz_checklistr_item_box">
-                <view class="pz_checklistr_item_cir" style="{{productFormStyle.app}};">
-                  <image class="pz_checklistr_item_ico" hidden="{{pfIcoShow.app}}" mode="scaleToFill" src="../../image/{{productFormIco.app}}"></image>
-                  <view class="pz_checklistr_score" hidden="{{!pfIcoShow.app}}">{{productFormScore.app}}</view>
+                <view class="pz_checklistr_item_cir" style="{{(productFormScore.app > 0 || jsonstreamEnd) ? 'border-color: #FFFFFF;' : ''}};">
+                  <image class="pz_checklistr_item_ico" hidden="{{(productFormScore.app > 0 || jsonstreamEnd)}}" mode="scaleToFill" src="../../image/{{productFormIco.app}}"></image>
+                  <view class="pz_checklistr_score" hidden="{{!(productFormScore.app > 0 || jsonstreamEnd)}}">{{productFormScore.app}}<view class="pz_checklistr_uint" wx:if="{{unitShowed.app}}">万</view></view>
                 </view>
-                <view class="pz_checklistr_item_name" style="{{productFormNameStyle.app}};">新闻客户端</view>
+                <view class="pz_checklistr_item_name" style="{{(productFormScore.app > 0 || jsonstreamEnd) ? 'color: #FFFFFF;' : ''}};">新闻客户端</view>
               </view>
             </view>
             <view class="pz_checklistr_item">
               <view class="pz_checklistr_item_box" bindtap="lockTipsTap">
-                <view class="pz_checklistr_item_cir" style="{{productFormStyle.weixin}}">
-                  <image class="pz_checklistr_item_ico" hidden="{{pfIcoShow.weixin}}" mode="scaleToFill" src="../../image/{{productFormIco.weixin}}"></image>
-                  <view class="pz_checklistr_score" hidden="{{!pfIcoShow.weixin}}">{{productFormScore.weixin}}</view>
+                <view class="pz_checklistr_item_cir" style="{{(productFormScore.weixin > 0 || jsonstreamEnd) ? 'border-color: #FFFFFF;' : ''}}">
+                  <image class="pz_checklistr_item_ico" hidden="{{productFormScore.weixin > 0}}" mode="scaleToFill" src="../../image/{{productFormIco.weixin}}"></image>
+                  <view class="pz_checklistr_score" hidden="{{!productFormScore.weixin > 0}}">{{productFormScore.weixin}}</view>
                 </view>
-                <view class="pz_checklistr_item_name" style="{{productFormNameStyle.weixin}};">微信</view>
+                <view class="pz_checklistr_item_name" style="{{(productFormScore.weixin > 0 || jsonstreamEnd) ? 'color: #FFFFFF;' : ''}};">微信</view>
               </view>
             </view>
             <view class="pz_checklistr_item">
               <view class="pz_checklistr_item_box" bindtap="lockTipsTap">
-                <view class="pz_checklistr_item_cir" style="{{productFormStyle.weibo}};">
-                  <image class="pz_checklistr_item_ico" hidden="{{pfIcoShow.weibo}}" mode="scaleToFill" src="../../image/{{productFormIco.weibo}}"></image>
-                  <view class="pz_checklistr_score" hidden="{{!pfIcoShow.weibo}}">{{productFormScore.weibo}}</view>
+                <view class="pz_checklistr_item_cir" style="{{(productFormScore.weibo > 0 || jsonstreamEnd) ? 'border-color: #FFFFFF;' : ''}};">
+                  <image class="pz_checklistr_item_ico" hidden="{{productFormScore.weibo > 0}}" mode="scaleToFill" src="../../image/{{productFormIco.weibo}}"></image>
+                  <view class="pz_checklistr_score" hidden="{{!productFormScore.weibo > 0}}">{{productFormScore.weibo}}</view>
                 </view>
-                <view class="pz_checklistr_item_name" style="{{productFormNameStyle.weibo}};">微博</view>
+                <view class="pz_checklistr_item_name" style="{{(productFormScore.weibo > 0 || jsonstreamEnd) ? 'color: #FFFFFF;' : ''}};">微博</view>
               </view>
             </view>
           </view>

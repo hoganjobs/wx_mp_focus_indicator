@@ -81,7 +81,7 @@ Page({
    * 通过 WebSocket 获取详情页信息
    */
   getTitleSignJsonrpcDetail: function () {
-    var that = this
+    var self = this
     let keyword_rule = this.data.keyword_rule
     let title_sign = this.data.title_sign
     let source_keyword = this.data.keyword_rule.source_keyword
@@ -130,7 +130,7 @@ Page({
             articles[i].publish_at = date
           }
           try {
-            that.setData({
+            self.setData({
               resultArticleData: articles,
               resultArticleLoadShowed: true
             })
@@ -141,14 +141,14 @@ Page({
                 result[key].abstract = ''
               }
             }
-            that.setData({
+            self.setData({
               resultArticleData: articles,
               resultArticleLoadShowed: true
             })
           }
         }
         else {
-          that.setData({
+          self.setData({
             resultArticleLoadShowed: true
           })
         }
@@ -219,7 +219,7 @@ Page({
   onLoad: function (options) {
     console.log('article onLoad')
     console.log(options)
-    var that = this
+    var self = this
     this.data.title_sign = options.title_sign
     this.data.keyword_rule = JSON.parse(decodeURIComponent(options.keyword_rule))
     console.log(this.data.keyword_rule)

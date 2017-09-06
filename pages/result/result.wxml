@@ -5,131 +5,139 @@
 <view class="container">
   <view class="pz_result_wrap">
     <view class="pz_resultbox"  hidden="{{resultboxAreaShowed}}">
-      <view class="pz_result_header">
-        <image class="pz_result_header_img" mode="scaleToFill" src="../../image/img_top_b@2x.png"></image>
-        <view class="pz_resultbox_total_score_box">
-          <view class="pz_resultbox_total_score" wx:if="{{finalCrisisScore}}">{{finalCrisisScore}}</view>
-          <view class="pz_resultbox_total_score" wx:if="{{!finalCrisisScore}}">0</view>
-        </view>
-        <view class="pz_result_list_unstyled">
-          <view class="pz_result_checklistr_item_row">
-            <view class="pz_result_checklistr_item">
-              <view class="pz_result_checklistr_item_box">
-                <view class="pz_result_checklistr_item_cir">
-                  <image class="pz_result_checklistr_item_ico" hidden="{{pfFinalIcoShow.portals}}" mode="scaleToFill" src="../../image/{{productFormIco.portals}}"></image>
-                  <view class="pz_result_checklistr_score" hidden="{{!pfFinalIcoShow.portals}}">{{pfScore.portals}}</view>
+      <!-- 使用竖向滚动时scroll-y="true"，需要给<scroll-view/>一个固定高度，通过 WXSS 设置 height。 -->
+<!--       <scroll-view scroll-y="true" style="height:{{windowHeight}}px" bindscrolltoupper="" bindscrolltolower="" bindscroll="" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}" scroll-with-animation="true"> -->
+        <view class="pz_result_header">
+          <image class="pz_result_header_img" mode="scaleToFill" src="../../image/img_top_b@2x.png"></image>
+          <view class="pz_resultbox_total_score_box">
+            <view class="pz_resultbox_total_score" wx:if="{{finalCrisisScore}}">{{finalCrisisScore}}</view>
+            <view class="pz_resultbox_total_score" wx:if="{{!finalCrisisScore}}">0</view>
+          </view>
+          <view class="pz_result_list_unstyled">
+            <view class="pz_result_checklistr_item_row">
+              <view class="pz_result_checklistr_item">
+                <view class="pz_result_checklistr_item_box">
+                  <view class="pz_result_checklistr_item_cir">
+                    <image class="pz_result_checklistr_item_ico" hidden="{{pfFinalIcoShow.portals}}" mode="scaleToFill" src="../../image/{{productFormIco.portals}}"></image>
+                    <view class="pz_result_checklistr_score" hidden="{{!pfFinalIcoShow.portals}}">{{pfScore.portals}}</view>
+                  </view>
+                  <view class="pz_result_checklistr_item_name">门户网媒</view>
                 </view>
-                <view class="pz_result_checklistr_item_name">门户网媒</view>
+              </view>
+              <view class="pz_result_checklistr_item pz_result_checklistr_item_flex">
+                <view class="pz_result_checklistr_item_box">
+                  <view class="pz_result_checklistr_item_cir">
+                    <image class="pz_result_checklistr_item_ico" hidden="{{pfFinalIcoShow.search_engine}}" mode="scaleToFill" src="../../image/{{productFormIco.search_engine}}"></image>
+                    <view class="pz_result_checklistr_score" hidden="{{!pfFinalIcoShow.search_engine}}">{{pfScore.search_engine}}</view>
+                  </view>
+                  <view class="pz_result_checklistr_item_name">搜索引擎</view>
+                </view>
+              </view>
+              <view class="pz_result_checklistr_item">
+                <view class="pz_result_checklistr_item_box">
+                  <view class="pz_result_checklistr_item_cir">
+                    <image class="pz_result_checklistr_item_ico" hidden="{{pfFinalIcoShow.bbs}}" mode="scaleToFill" src="../../image/{{productFormIco.bbs}}"></image>
+                    <view class="pz_result_checklistr_score" hidden="{{!pfFinalIcoShow.bbs}}">{{pfScore.bbs}}</view>
+                  </view>
+                  <view class="pz_result_checklistr_item_name">论坛贴吧</view>
+                </view>
               </view>
             </view>
-            <view class="pz_result_checklistr_item pz_result_checklistr_item_flex">
-              <view class="pz_result_checklistr_item_box">
-                <view class="pz_result_checklistr_item_cir">
-                  <image class="pz_result_checklistr_item_ico" hidden="{{pfFinalIcoShow.search_engine}}" mode="scaleToFill" src="../../image/{{productFormIco.search_engine}}"></image>
-                  <view class="pz_result_checklistr_score" hidden="{{!pfFinalIcoShow.search_engine}}">{{pfScore.search_engine}}</view>
+            <view class="pz_result_checklistr_item_row">
+              <view class="pz_result_checklistr_item">
+                <view class="pz_result_checklistr_item_box">
+                  <view class="pz_result_checklistr_item_cir">
+                    <image class="pz_result_checklistr_item_ico" hidden="{{pfFinalIcoShow.app}}" mode="scaleToFill" src="../../image/{{productFormIco.app}}"></image>
+                    <view class="pz_result_checklistr_score" hidden="{{!pfFinalIcoShow.app}}">{{pfScore.app}}</view>
+                  </view>
+                  <view class="pz_result_checklistr_item_name">新闻客户端</view>
                 </view>
-                <view class="pz_result_checklistr_item_name">搜索引擎</view>
               </view>
-            </view>
-            <view class="pz_result_checklistr_item">
-              <view class="pz_result_checklistr_item_box">
-                <view class="pz_result_checklistr_item_cir">
-                  <image class="pz_result_checklistr_item_ico" hidden="{{pfFinalIcoShow.bbs}}" mode="scaleToFill" src="../../image/{{productFormIco.bbs}}"></image>
-                  <view class="pz_result_checklistr_score" hidden="{{!pfFinalIcoShow.bbs}}">{{pfScore.bbs}}</view>
+              <view class="pz_result_checklistr_item pz_result_checklistr_item_flex">
+                <view class="pz_result_checklistr_item_box" bindtap="lockTipsTap">
+                  <view class="pz_result_checklistr_item_cir">
+                    <image class="pz_result_checklistr_item_ico" hidden="{{pfFinalIcoShow.weixin}}" mode="scaleToFill" src="../../image/{{productFormIco.weixin}}"></image>
+                    <view class="pz_result_checklistr_score" hidden="{{!pfFinalIcoShow.weixin}}">{{pfScore.weixin}}</view>
+                  </view>
+                  <view class="pz_result_checklistr_item_name">微信</view>
                 </view>
-                <view class="pz_result_checklistr_item_name">论坛贴吧</view>
+              </view>
+              <view class="pz_result_checklistr_item">
+                <view class="pz_result_checklistr_item_box" bindtap="lockTipsTap">
+                  <view class="pz_result_checklistr_item_cir">
+                    <image class="pz_result_checklistr_item_ico" hidden="{{pfFinalIcoShow.weibo}}" mode="scaleToFill" src="../../image/{{productFormIco.weibo}}"></image>
+                    <view class="pz_result_checklistr_score" hidden="{{!pfFinalIcoShow.weibo}}">{{pfScore.weibo}}</view>
+                  </view>
+                  <view class="pz_result_checklistr_item_name">微博</view>
+                </view>
               </view>
             </view>
           </view>
-          <view class="pz_result_checklistr_item_row">
-            <view class="pz_result_checklistr_item">
-              <view class="pz_result_checklistr_item_box">
-                <view class="pz_result_checklistr_item_cir">
-                  <image class="pz_result_checklistr_item_ico" hidden="{{pfFinalIcoShow.app}}" mode="scaleToFill" src="../../image/{{productFormIco.app}}"></image>
-                  <view class="pz_result_checklistr_score" hidden="{{!pfFinalIcoShow.app}}">{{pfScore.app}}</view>
+          <!-- 下一模块的顶部嵌入区域 -->
+          <!-- <view class="pz_result_header_underline"></view> -->
+        </view>
+        <view class="pz_result_content">
+          <view class="pz_result_detail">
+            <view class="pz_result_item">
+              <!-- 媒体观点区域 -->
+              <!-- <view class="pz_result_article_title" bindtap="snackbarTap"> -->
+              <view class="pz_result_article_title" bindtap="">
+                <image style="width: 30px; height: 30px;" mode="{{item.mode}}" src="../../image/icon_viewpoint.svg"></image>
+                <text class="pz_result_title_text">媒体观点</text>
+                <text class="pz_result_title_text_count" wx:if="{{titleSignCount > 0}}">（{{titleSignCount}}条）</text>
+                <!-- 媒体分析报告页跳转按钮 -->
+                <view class="pz_analysis_btn" wx:if="{{resultArticleData.length > 0}}" hidden="{{analysisBtnShowed}}" bindtap="analysisTap">
+                  <view class="pz_analysis_btn_item">+</view>
                 </view>
-                <view class="pz_result_checklistr_item_name">新闻客户端</view>
               </view>
-            </view>
-            <view class="pz_result_checklistr_item pz_result_checklistr_item_flex">
-              <view class="pz_result_checklistr_item_box" bindtap="lockTipsTap">
-                <view class="pz_result_checklistr_item_cir">
-                  <image class="pz_result_checklistr_item_ico" hidden="{{pfFinalIcoShow.weixin}}" mode="scaleToFill" src="../../image/{{productFormIco.weixin}}"></image>
-                  <view class="pz_result_checklistr_score" hidden="{{!pfFinalIcoShow.weixin}}">{{pfScore.weixin}}</view>
+              <!-- 媒体列表数据加载中提示 -->
+              <view class="pz_result_article_listr_loading" hidden="{{resultArticleLoadShowed}}">
+                <text>加载中 </text>
+                <view class="sk-three-bounce">
+                  <view class="sk-child sk-bounce1"></view>
+                  <view class="sk-child sk-bounce2"></view>
+                  <view class="sk-child sk-bounce3"></view>
                 </view>
-                <view class="pz_result_checklistr_item_name">微信</view>
               </view>
-            </view>
-            <view class="pz_result_checklistr_item">
-              <view class="pz_result_checklistr_item_box" bindtap="lockTipsTap">
-                <view class="pz_result_checklistr_item_cir">
-                  <image class="pz_result_checklistr_item_ico" hidden="{{pfFinalIcoShow.weibo}}" mode="scaleToFill" src="../../image/{{productFormIco.weibo}}"></image>
-                  <view class="pz_result_checklistr_score" hidden="{{!pfFinalIcoShow.weibo}}">{{pfScore.weibo}}</view>
+              <!-- 无数据提示 -->
+              <view class="pz_result_article_listr_no" hidden="{{resultArticleNoDataShowed}}">
+                <text>暂无媒体焦点 </text>
+              </view>
+              <!-- 加载数据失败提示 -->
+              <view class="pz_result_article_listr_no" hidden="{{resultArticleFailDataShowed}}">
+                <text>加载列表失败，请重试 </text>
+              </view>
+              <!-- 媒体观点所有列表区域 -->
+              <view class="pz_result_article_listr">
+                <view wx:for="{{resultArticleData}}" wx:key="resultArticleId" wx:for-item="resultArticle">
+                  <view class="pz_result_artcile_item">
+                    <view class="pz_result_publish_date" id="{{'inToView'+resultArticle.publish_at}}" bindtap="">
+                      <text class="pz_result_publish_date_text">{{resultArticle.publish_at}}</text>
+                      <text class="pz_result_publish_date_text" wx:if="{{resultArticle.data.length > 1}}">（{{resultArticle.data.length}}条）</text>
+                    </view>
+                    <view wx:for="{{resultArticle.data}}" wx:key="resultArticleId" wx:for-item="resultArticleItem">
+                      <template is="sensitive_true" data="{{resultArticleItem}}"/>
+                    </view>
+                  </view>
                 </view>
-                <view class="pz_result_checklistr_item_name">微博</view>
               </view>
+              <!-- 媒体列表数据加载中提示 -->
+              <view class="pz_result_article_listr_loading" hidden="{{resultArticleLoadNextShowed}}">
+                <text>加载中 </text>
+                <view class="sk-three-bounce">
+                  <view class="sk-child sk-bounce1"></view>
+                  <view class="sk-child sk-bounce2"></view>
+                  <view class="sk-child sk-bounce3"></view>
+                </view>
+              </view>
+              <!-- 媒体分析报告页跳转按钮 -->
+<!--               <view class="pz_analysis_plus_btn" wx:if="{{resultArticleData.length > 0}}" hidden="{{analysisBtnShowed}}">
+                <view class="pz_analysis_plus_btn_item">+</view>
+              </view> -->
             </view>
           </view>
         </view>
-        <!-- 下一模块的顶部嵌入区域 -->
-        <!-- <view class="pz_result_header_underline"></view> -->
-      </view>
-
-      <view class="pz_result_content">
-        <view class="pz_result_detail">
-          <view class="pz_result_item">
-            <!-- 媒体观点区域 -->
-            <!-- <view class="pz_result_article_title" bindtap="snackbarTap"> -->
-            <view class="pz_result_article_title" bindtap="">
-              <image style="width: 30px; height: 30px;" mode="{{item.mode}}" src="../../image/icon_viewpoint.svg"></image>
-              <text class="pz_result_title_text">媒体观点</text>
-              <text class="pz_result_title_text_count" wx:if="{{titleSignCount > 0}}">（{{titleSignCount}}条）</text>
-            </view>
-            <!-- 媒体观点所有列表区域 -->
-            <view class="pz_result_article_listr">
-              <block wx:for="{{resultArticleData}}" wx:key="resultArticleId" wx:for-item="resultArticle">
-                <view class="pz_result_publish_date" bindtap="">
-                  <text class="pz_result_publish_date_text">{{resultArticle.publish_date}}</text>
-                  <text class="pz_result_publish_date_text" wx:if="{{resultArticle.data.length > 1}}">（{{resultArticle.data.length}}条）</text>
-                </view>
-                <block wx:for="{{resultArticle.data}}" wx:key="resultArticleId" wx:for-item="resultArticleItem">
-                  <template is="sensitive_true" data="{{resultArticleItem}}"/>
-                </block>
-              </block>
-            </view>
-            <!-- 媒体观点所有列表区域 -->
-  <!--           <view class="pz_result_article_listr">
-              <block wx:for="{{resultArticleData}}" wx:key="resultArticleId" wx:for-item="resultArticle">
-                <template is="sensitive_true" data="{{resultArticle}}"/>
-              </block>
-              <block wx:for="{{resultArticleData2}}" wx:key="resultArticleId2" wx:for-item="resultArticle">
-                <template is="sensitive_true" data="{{resultArticle}}"/>
-              </block>
-              <block wx:for="{{resultArticleData3}}" wx:key="resultArticleId3" wx:for-item="resultArticle">
-                <template is="sensitive_true" data="{{resultArticle}}"/>
-              </block>
-              <block wx:for="{{resultArticleData4}}" wx:key="resultArticleId4" wx:for-item="resultArticle">
-                <template is="sensitive_true" data="{{resultArticle}}"/>
-              </block>
-            </view> -->
-            <!-- 媒体观点列表数据的加载中动画区域 -->
-            <view class="pz_result_article_listr_loading" hidden="{{resultArticleLoadShowed}}">
-              <text>加载中 </text>
-              <view class="sk-three-bounce">
-                <view class="sk-child sk-bounce1"></view>
-                <view class="sk-child sk-bounce2"></view>
-                <view class="sk-child sk-bounce3"></view>
-              </view>
-            </view>
-            <view class="pz_result_article_listr_no" hidden="{{resultArticleNoDataShowed}}">
-              <text>暂无媒体焦点 </text>
-            </view>
-            <view class="pz_result_article_listr_no" hidden="{{resultArticleFailDataShowed}}">
-              <text>加载列表失败，请重试 </text>
-            </view>
-          </view>
-        </view>
-      </view>
+      <!-- </scroll-view> -->
     </view>
   </view>  
 </view>

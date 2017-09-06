@@ -1,7 +1,7 @@
 /**
- * @Author 陈建维
- * 微信小程序WebSocket Json RPC请求封装
- */
+* @Author 陈建维
+* 微信小程序WebSocket Json RPC请求封装
+*/
 
 var socketOpen = false;
 var socketMsgQueue = [];
@@ -10,6 +10,9 @@ var id = 0;//请求id，用于识别每一次请求的callback
 var wsCallbacks = {};//请求callbacks
 var jsonStreamCallbacks = {};//json stream callbacks
 var blackList = {};
+
+var CLOSE_SOCKET_BY_CONTROL = 110; //onSocketClose方法中，此标记表示人工正常关闭Socket
+
 /**
  * 连接WebSocket
  * @url WebSocket地址
@@ -24,10 +27,30 @@ function connect(url, onSocketOpen, onSocketError, onSocketClose, broadcastDispa
     method: "GET"
   })
 
+  /**
+   * 网络状态改变的时候发起重新连接
+   */
+  wx.onNetworkStatusChange(function (res) {
+    console.log('onNetworkStatusChange', res.isConnected)
+    console.log('onNetworkStatusChange', res.networkType)
+    if (res.isConnected){
+      wx.connectSocket({
+        url: url,
+        method: "GET"
+      })
+    }
+  });
+
   wx.onSocketClose(function (res) {
     console.log('WebSocket 已关闭！', res)
     socketOpen = false
     onSocketClose && onSocketClose(res);
+    if (!res.reason || res.reason.indexOf('call') === -1) {
+      console.log('异常关闭');
+      //TODO: 重新连接
+    } else {
+      console.log('正常关闭');
+    }
   })
 
   wx.onSocketError(function (res) {
@@ -79,7 +102,7 @@ function connect(url, onSocketOpen, onSocketError, onSocketClose, broadcastDispa
           && wsCallbacks[receivedId].errorCb(data.error);
       }
 
-      wsCallbacks[receivedId] = undefined;//回调完成后清空该字段，避免wsCallbacks越来越大
+      wsCallbacks[receivedId] = undefined; //回调完成后清空该字段，避免wsCallbacks越来越大
 
     } else if (jsonstream && jsonstream === '1.0') {
       jsonStreamHandler(data);
@@ -194,11 +217,24 @@ function jsonFilter(result) {
   return result;
 }
 
+function isSocketOpen() {
+  return socketOpen === true;
+}
+
+function closeSocket() {
+  wx.closeSocket({
+    code: 1000,
+    reason: 'call',
+  })
+}
+
 module.exports = {
   connect: connect,
   call: call,
   jsonFilter: jsonFilter,
   subscribeJsonStream: subscribeJsonStream,
   unSubscribeJsonStream: unSubscribeJsonStream,
+  isSocketOpen: isSocketOpen,
+  closeSocket: closeSocket,
 }
 

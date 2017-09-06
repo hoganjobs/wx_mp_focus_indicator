@@ -1,0 +1,45 @@
+<!--analysisReport.wxml-->
+<view class="container">
+	<!-- canvas图表区域 -->
+	<view class="pz_canvas" style="width:{{windowWidth}}px" hidden="{{analysisCanvasShowed}}">
+		<canvas canvas-id="areaCanvas" disable-scroll="true" class="canvas" style="width:{{windowWidth}}px" bindtouchstart="touchHandler"></canvas>
+	</view>
+	<view class="pz_analysis_listr_loading" hidden="{{analysisLoadShowed}}">
+		<view class="sk-circle">
+		  <view class="sk-circle1 sk-child"></view>
+		  <view class="sk-circle2 sk-child"></view>
+		  <view class="sk-circle3 sk-child"></view>
+		  <view class="sk-circle4 sk-child"></view>
+		  <view class="sk-circle5 sk-child"></view>
+		  <view class="sk-circle6 sk-child"></view>
+		  <view class="sk-circle7 sk-child"></view>
+		  <view class="sk-circle8 sk-child"></view>
+		  <view class="sk-circle9 sk-child"></view>
+		  <view class="sk-circle10 sk-child"></view>
+		  <view class="sk-circle11 sk-child"></view>
+		  <view class="sk-circle12 sk-child"></view>
+		</view>
+	</view>
+	<!-- 详情列表区域 -->
+	<view class="pz_analysis_list_wrap">
+		<view class="pz_analysis_list_head">
+			<view class="pz_analysis_list_head_right" hover-class="pz_analysis_list_head_right_hover" bindtap="showAllTap">显示全部</view>
+			<view class="pz_analysis_list_head_title">全部列表</view>
+		</view>
+	  <view wx:for="{{analysisData}}" wx:key="analysisId" wx:for-index="idx" wx:for-item="analysisItem">
+	  	<view class="pz_analysis_list" data-id="{{analysisItem.id}}" bindtap="tagChooseTap">
+	  		<view class="pz_analysis_list_left{{currentItem==analysisItem.id?' pz_active_rank':''}}">
+	  			<view class="">{{analysisItem.rank}}</view>
+	  		</view>
+	  		<view class="pz_analysis_list_right">
+	  			<view class="">{{analysisItem.count}}条相关》</view>
+	  		</view>
+	  		<view class="pz_analysis_list_item">
+	  		  <view class="pz_analysis_list_title{{currentItem==analysisItem.id?' pz_active_item':''}}">{{analysisItem.title}}</view>
+	  		  <view class="pz_analysis_list_media">{{analysisItem.media_name}}</view>
+	  		  <view class="pz_analysis_list_publish_at">{{analysisItem.publish_at}}</view>
+	  		</view>
+	  	</view>
+	  </view>
+	</view>
+</view>

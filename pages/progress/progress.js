@@ -12,7 +12,8 @@ Page({
     checkboxAreaShowed: false,
     loadingDetailShow: false,
     loadingDecIcoShow: false,
-    pfIcoShow: {
+    jsonstreamEnd: false, //进度结束标志，改变border、color样式
+    unitShowed: { //显示带单位“万”的分数
       app: false,
       portals: false,
       search_engine: false,
@@ -22,27 +23,10 @@ Page({
     },
     keywordVal: '',
     keyword_rule: '',
-    crisisboxAnimationData: {},
-    totalCrisisScore: '0',
-    totalCrisisScoreCal: 0,
+    crisisboxAnimationData: {}, //动画对象
+    totalCrisisScore: '0', //总分
     productFormNameData: '开始查询',
-    productFormStyle: {
-      portals: '',
-      search_engine: '',
-      bbs: '',
-      app: '',
-      weixin: 'border-color: #FFFFFF',
-      weibo: 'border-color: #FFFFFF'
-    },
-    productFormNameStyle: {
-      portals: '',
-      search_engine: '',
-      bbs: '',
-      app: '',
-      weixin: 'color: #FFFFFF',
-      weibo: 'color: #FFFFFF'
-    },
-    productFormIco: {
+    productFormIco: { //图标图片
       portals: 'icon_web.svg',
       search_engine: 'icon_search.svg',
       bbs: 'icon_forum.svg',
@@ -50,15 +34,7 @@ Page({
       weixin: 'icon_lock.svg',
       weibo: 'icon_lock.svg'
     },
-    productFormScore: {
-      portals: '0',
-      search_engine: '0',
-      bbs: '0',
-      app: '0',
-      weixin: '0',
-      weibo: '0'
-    },
-    productFormScoreCal: {
+    productFormScore: { //分类分数
       app: 0,
       portals: 0,
       search_engine: 0,
@@ -67,10 +43,8 @@ Page({
       bbs: 0
     },
     stream_id: '', //定义stream_id用于判断websocket中added消息
-    skip: 1, //设置列表请求页数的值
     stopFlag: true, //定义stopSocketJsonrpc执行标志,正常执行完end不能调用stop
     progressPercent: null, //用于记录进度条百分比
-    user: 0
   },
 
   /**
@@ -132,66 +106,6 @@ Page({
   },
 
   /**
-   * 计算分类的总分
-   */
-  calPfScore: function (item_pf_score, isdraw) {
-    // console.log(item_pf_score)
-    let s_pf_id = item_pf_score.pf_id;
-    let s_pf_score = item_pf_score.pf_score;
-    let pf_score = this.data.productFormScore;
-    let pf_score_cal= this.data.productFormScoreCal;
-    let current_s_pf_score = pf_score_cal[s_pf_id] + s_pf_score;
-    pf_score_cal[s_pf_id] = current_s_pf_score;
-    pf_score[s_pf_id] = String(current_s_pf_score);
-    // console.log(pf_score[s_pf_id])
-    if (current_s_pf_score > 99999) {
-      pf_score[s_pf_id] = String(Math.round(current_s_pf_score / 10000)) + '万';
-    }
-    this.data.productFormScoreCal = pf_score_cal
-    if (isdraw) {
-      this.setData({
-        productFormScore: pf_score,
-        // productFormScoreCal: pf_score_cal
-      });
-    }
-  },
-  /**
-   * 根据检测状态操作样式
-   */
-  switchPfSign: function (item_pf_sign) {
-    console.log(item_pf_sign)
-    let i_pf_id = item_pf_sign.pf_id;
-    let i_pf_sign = item_pf_sign.pf_sign;
-    let pf_sign = this.data.pfIcoShow
-    let pf_style = this.data.productFormStyle
-    let pfn_style = this.data.productFormNameStyle
-    let pf_ico = this.data.productFormIco
-    let pf_score = this.data.productFormScore
-
-    pf_sign[i_pf_id] = true;
-    pf_style[i_pf_id] = 'border-color: #FFFFFF';
-    pfn_style[i_pf_id] = 'color: #FFFFFF';
-    if(i_pf_sign == 'pf_done' && pf_score[i_pf_id] == '0') {
-      console.log('pf_done')
-      // pf_ico[i_pf_id] = 'icon_complete.svg';
-      // pf_sign[i_pf_id] = false;
-      // console.log(typeof i_pf_id)
-      // console.log(i_pf_id)
-      if (i_pf_id == 'weixin' || i_pf_id == 'weibo') {
-        pf_sign[i_pf_id] = false;
-        pf_ico[i_pf_id] = 'icon_lock.svg';
-      }
-    }
-    this.setData({
-      pfIcoShow: pf_sign,
-      productFormStyle: pf_style,
-      productFormNameStyle: pfn_style,
-      productFormIco: pf_ico
-
-    });
-  },
-
-  /**
    * canvas圆环进度条
    * @ param  cavprogressPercent  进度百分比
    */
@@ -229,7 +143,7 @@ Page({
    * 订阅Jsonstream进度
    */
   subscribeJsonstream: function () {
-    var that = this
+    var self = this
     let stream_id = this.data.stream_id
     console.log('subscribeJsonstream')
     console.log('subscribeJsonstream stream_id:',stream_id)
@@ -237,15 +151,15 @@ Page({
       stream_id,
       function(begin) {
         console.log('begin data', begin);
-        that.onJsonstreamBegin(begin)
+        self.onJsonstreamBegin(begin)
       },
       function(add) {
         console.log('add data', add);
-        that.onJsonstreamAdded(add)
+        self.onJsonstreamAdded(add)
       },
       function(end) {
         console.log('end data', end);
-        that.onJsonstreamEnd(end)
+        self.onJsonstreamEnd(end)
       }
     )
   },
@@ -254,7 +168,7 @@ Page({
    * 取消订阅Jsonstream进度
    */
   unSubscribeJsonstream: function () {
-    var that = this
+    var self = this
     let stream_id = this.data.stream_id
     console.log('unSubscribeJsonstream')
     console.log('unSubscribeJsonstream stream_id:',stream_id)
@@ -267,17 +181,16 @@ Page({
   onJsonstreamBegin: function (data) {
     console.log('onJsonstreamBegin')
     // this.data.stream_id = data.data.stream_id
-    this.data.totalCrisisScoreCal = 0;
     this.setData({
       totalCrisisScore: '0',
-      pfScore: {
-          portals: '0',
-          search_engine: '0',
-          bbs: '0',
-          app: '0',
-          weixin: '0',
-          weibo: '0'
-      }
+      productFormScore: {
+        app: 0,
+        portals: 0,
+        search_engine: 0,
+        weixin: 0,
+        weibo: 0,
+        bbs: 0
+      },
     });
     // 初始化圆环进度
     this.canvasArc(0)
@@ -306,55 +219,69 @@ Page({
       }
       // 判断data_type是否实际数据
       else if (data_type == 'fi_scan_added_progress') {
-        let isdraw = (data.data.cursor_current%10 == 0) ? true : false; //每10条消息绘制
-        let second_time = parseInt((data.data.cursor_count - data.data.cursor_current) * 0.03)
-        let progressPercent = this.data.progressPercent
-        let cavprogressPercent = ((data.data.cursor_current/data.data.cursor_count)*(1 - progressPercent) + progressPercent) * 2
+        let cavprogressPercent = data.data.percent * 2
         console.log('onJsonstreamAdded fi_scan_added_progress cavprogressPercent:', cavprogressPercent)
-        let article_product_form_id = data.data.product_form_id;
-        let article_score = data.data.score;
-        let article_media_name = data.data.media_name;
-        let pf_IcoShow = this.data.pfIcoShow
-        // 定义分类平台ID的传参变量
-        let item_pf_sign = {
-          pf_id: article_product_form_id,
-          pf_sign: 'pf_active'
-        }
-        // 改变分类图标样式
-        if (!pf_IcoShow[article_product_form_id]) {
-          this.switchPfSign(item_pf_sign)
-        }
-        // 
-        if (article_score > 0) {
-          let total_score_cal = this.data.totalCrisisScoreCal;
-          total_score_cal = total_score_cal + article_score;
-          let total_score = String(total_score_cal)
-          // 定义分类平台ID和分数
-          let item_pf_score = {
-            pf_id: article_product_form_id,
-            pf_score: article_score
-          }
+        let total_score = data.data.total_score
+        let dec = data.data.dec
+        let pf_score = data.data.pf_score
+        let remaining_time = data.data.remaining_time
+        let unit = this.data.unitShowed
+
+        if (total_score > 0) {
           //超过指定位数时，转换为单位显示
-          if (total_score_cal > 999999) {
-            total_score = String(Math.round(total_score_cal / 10000)) + '万';
+          if (total_score > 999999) {
+            total_score = String(Math.round(total_score / 10000)) + '万';
           }
-          // 
-          this.data.totalCrisisScoreCal = total_score_cal;
-          // 每10条消息绘制
-          if (isdraw) {
-            // 更新总分数据、更新查询描述的媒体、查询的剩余时间
-            this.setData({
-              totalCrisisScore: total_score,
-              productFormNameData: '正在查询: ' + article_media_name,
-              estimateTimeData: '剩余查询时间：' + second_time + ' 秒'
-            });
-            // 绘制圆环进度
-            this.canvasArc(cavprogressPercent)
-            // 计算分类分数，更新分类数据
-            this.calPfScore(item_pf_score, isdraw)
+          total_score = String(total_score)
+
+          // 遍历分类分数，判断是否为0，更改图标显示
+          for (let key in pf_score) {
+            if (pf_score[key] > 99999) {
+              pf_score[key] = Math.round(pf_score[key] / 10000);
+              unit[key] = true;
+            }
           }
+          // 更新总分数据、更新查询描述的媒体、查询的剩余时间、更新分类分数数据
+          this.setData({
+            totalCrisisScore: total_score,
+            productFormNameData: dec,
+            estimateTimeData: '剩余查询时间：' + remaining_time + ' 秒',
+            productFormScore: pf_score,
+            unitShowed: unit
+          });
+          // 绘制圆环进度
+          this.canvasArc(cavprogressPercent)
         }
       }
+    }
+  },
+
+  /**
+   * 计算分类的总分
+   */
+  calPfScore: function (_pf_score) {
+    // console.log(item_pf_score)
+    let s_pf_id = item_pf_score.pf_id;
+    let s_pf_score = item_pf_score.pf_score;
+    let pf_score = this.data.productFormScore;
+    let pf_score_cal= this.data.productFormScoreCal;
+    let current_s_pf_score = pf_score_cal[s_pf_id] + s_pf_score;
+    pf_score_cal[s_pf_id] = current_s_pf_score;
+
+    // 遍历分类分数，判断是否为0，更改图标显示
+    for (let key in pf_score) {
+      console.log(pf_score[key])
+      if (pf_score[key] > 99999) {
+        pf_score[key] = String(Math.round(current_s_pf_score / 10000)) + '万';
+        pf_score[key] = Math.round(current_s_pf_score / 10000);
+      }
+    }
+    pf_score[s_pf_id] = String(current_s_pf_score);
+    if (isdraw) {
+      this.setData({
+        productFormScore: pf_score,
+        // productFormScoreCal: pf_score_cal
+      });
     }
   },
 
@@ -362,27 +289,35 @@ Page({
    * 针对websocket服务端发送消息，Jsonstream的End消息事件处理
    */
   onJsonstreamEnd: function (data) {
+    let total_score = data.data.total_score
+    let pf_score = data.data.pf_score
+    let unit = this.data.unitShowed
     let result_loading_dec = '完成';
-    let pf_score = data.data.pf_score;
-    let key;
     if (this.data.stream_id == data.data.stream_id) {
+      // 停止标志，不能发送jsonStop请求
+      this.data.stopFlag = false;
+      //超过指定位数时，转换为单位显示
+      if (total_score > 999999) {
+        total_score = String(Math.round(total_score / 10000)) + '万';
+      }
+      total_score = String(total_score)
+
       // 遍历分类分数，判断是否为0，更改图标显示
-      for ( key in pf_score) {
-        console.log(pf_score[key])
-        if(pf_score[key] == '0') {
-          let item_pf_sign = {
-            pf_id: key,
-            pf_sign: 'pf_done'
-          }
-          this.switchPfSign(item_pf_sign)
+      for (let key in pf_score) {
+        if (pf_score[key] > 99999) {
+          pf_score[key] = Math.round(pf_score[key] / 10000);
+          unit[key] = true;
         }
       }
-      // 
-      this.data.stopFlag = false;
-      // 更新页面，查询完成
+      // 更新页面数据，查询完成
       this.setData({
         loadingDecIcoShow: true,
-        productFormNameData: result_loading_dec
+        totalCrisisScore: total_score,
+        productFormScore: pf_score,
+        unitShowed: unit,
+        productFormNameData: result_loading_dec,
+        estimateTimeData: '',
+        jsonstreamEnd: true
       });
       // 闭合圆环进度
       this.canvasArc(2)
@@ -439,7 +374,7 @@ Page({
    */
   stopSocketJsonrpc: function () {
     console.log('stopSocketJsonrpc')
-    var that = this
+    var self = this
     let source_keyword = app.globalData.keywordRuleVal.source_keyword
     let keyword_rule = app.globalData.keywordRuleVal
     let stream_id = this.data.stream_id
@@ -471,9 +406,6 @@ Page({
   onLoad: function (options) {
     console.log('progerss onLoad')
     this.data.stream_id = options.stream_id
-    // 通过 WebSocket 连接发送消息，获取进度
-    // this.getSocketJsonrpcMessage()
-    this.subscribeJsonstream()
   },
 
   /**
@@ -499,6 +431,9 @@ Page({
         console.log('fail progerss navTitle:', err)
       }
     })
+    // 通过 WebSocket 连接发送消息，获取进度
+    // this.getSocketJsonrpcMessage()
+    this.subscribeJsonstream()
   },
 
   /**
