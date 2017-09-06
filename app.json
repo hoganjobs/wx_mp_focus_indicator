@@ -1,0 +1,19 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/account/account",
+    "pages/crisis/crisis",
+    "pages/article/article",
+    "pages/progress/progress",
+    "pages/result/result",
+    "pages/resultLoad/resultLoad"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#1684fb",
+    "navigationBarTitleText": "焦点风向标",
+    "navigationBarTextStyle": "light",
+    "backgroundColor": "#f5f5f5"
+  },
+  "debug": true
+}
