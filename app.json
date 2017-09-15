@@ -6,7 +6,8 @@
     "pages/progress/progress",
     "pages/result/result",
     "pages/resultLoad/resultLoad",
-    "pages/analysisReport/analysisReport"
+    "pages/analysisReport/analysisReport",
+    "pages/analysisDetail/analysisDetail"
   ],
   "window": {
     "backgroundTextStyle": "dark",

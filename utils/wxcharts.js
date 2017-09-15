@@ -16,10 +16,12 @@ var config = {
     xAxisLineHeight: 15,
     legendHeight: 15,
     yAxisTitleWidth: 15,
-    padding: 12,
+    padding: 16,
     columePadding: 3,
     fontSize: 10,
-    dataPointShape: ['diamond', 'circle', 'triangle', 'rect'],
+    dataPointShape: ['circle', 'diamond', 'triangle', 'rect'],
+    pointColors: ['#7cb5ec', '#f7a35c', '#434348', '#90ed7d', '#f15c80', '#8085e9'],
+    stroke: ['#7cb5ec', '#f7a35c', '#434348', '#90ed7d', '#f15c80', '#8085e9'],
     colors: ['#7cb5ec', '#f7a35c', '#434348', '#90ed7d', '#f15c80', '#8085e9'],
     pieChartLinePadding: 25,
     pieChartTextPadding: 15,
@@ -313,6 +315,7 @@ function getSeriesDataItem(series, index) {
     series.forEach(function (item) {
         if (item.data[index] !== null && typeof item.data[index] !== 'undefinded') {
             var seriesItem = {};
+            seriesItem.pointColor = item.pointColor;
             seriesItem.color = item.color;
             seriesItem.name = item.name;
             seriesItem.data = item.format ? item.format(item.data[index]) : item.data[index];
@@ -348,7 +351,7 @@ function getToolTipData(seriesData, calPoints, index, categories) {
     var textList = seriesData.map(function (item) {
         return {
             text: option.format ? option.format(item, categories[index]) : item.name + ': ' + item.data,
-            color: item.color
+            color: item.pointColor
         };
     });
     var validCalPoints = [];
@@ -527,6 +530,8 @@ function calCategoriesData(categories, opts, config) {
         result.angle = 45 * Math.PI / 180;
         result.xAxisHeight = 2 * config.xAxisTextPadding + maxTextLength * Math.sin(result.angle);
     }
+    // console.log('categoriesTextLenth:', categoriesTextLenth)
+    // console.log('maxTextLength:', maxTextLength)
 
     return result;
 }
@@ -620,6 +625,13 @@ function getXAxisPoints(categories, opts, config) {
     var startX = config.padding + yAxisTotalWidth;
     var endX = opts.width - config.padding;
     categories.forEach(function (item, index) {
+        // if (index == 1 ) {
+        //     xAxisPoints.push(startX + index * eachSpacing/2);
+        // } else if (index === item.length - 1) {
+        //     xAxisPoints.push(startX + index * eachSpacing + eachSpacing/4);
+        // } else {
+        //     xAxisPoints.push(startX + index * eachSpacing);
+        // }
         xAxisPoints.push(startX + index * eachSpacing);
     });
     xAxisPoints.push(endX);
@@ -709,34 +721,34 @@ function drawPointShape(points, color, shape, context) {
     if (shape === 'diamond') {
         points.forEach(function (item, index) {
             if (item !== null) {
-                context.moveTo(item.x, item.y - 4.5);
-                context.lineTo(item.x - 4.5, item.y);
-                context.lineTo(item.x, item.y + 4.5);
-                context.lineTo(item.x + 4.5, item.y);
-                context.lineTo(item.x, item.y - 4.5);
+                context.moveTo(item.x, item.y - 3.5);
+                context.lineTo(item.x - 3.5, item.y);
+                context.lineTo(item.x, item.y + 3.5);
+                context.lineTo(item.x + 3.5, item.y);
+                context.lineTo(item.x, item.y - 3.5);
             }
         });
     } else if (shape === 'circle') {
         points.forEach(function (item, index) {
             if (item !== null) {
                 context.moveTo(item.x + 3.5, item.y);
-                context.arc(item.x, item.y, 4, 0, 2 * Math.PI, false);
+                context.arc(item.x, item.y, 3, 0, 2 * Math.PI, false);
             }
         });
     } else if (shape === 'rect') {
         points.forEach(function (item, index) {
             if (item !== null) {
-                context.moveTo(item.x - 3.5, item.y - 3.5);
-                context.rect(item.x - 3.5, item.y - 3.5, 7, 7);
+                context.moveTo(item.x - 2.5, item.y - 2.5);
+                context.rect(item.x - 2.5, item.y - 2.5, 5, 5);
             }
         });
     } else if (shape === 'triangle') {
         points.forEach(function (item, index) {
             if (item !== null) {
-                context.moveTo(item.x, item.y - 4.5);
-                context.lineTo(item.x - 4.5, item.y + 4.5);
-                context.lineTo(item.x + 4.5, item.y + 4.5);
-                context.lineTo(item.x, item.y - 4.5);
+                context.moveTo(item.x, item.y - 3.5);
+                context.lineTo(item.x - 3.5, item.y + 3.5);
+                context.lineTo(item.x + 3.5, item.y + 3.5);
+                context.lineTo(item.x, item.y - 3.5);
             }
         });
     }
@@ -800,6 +812,50 @@ function drawPointText(points, series, config, context) {
     });
     context.closePath();
     context.stroke();
+}
+
+function drawRankLabel(points, series, config, context) {
+    // 绘制关联列表序号的标注，自定义的
+    var data = series.rank;
+    var color = series.rankColor;
+
+    context.beginPath();
+    context.setFontSize(config.fontSize);
+    points.forEach(function (item, index) {
+        if (item !== null) {
+            var formatVal = series.format ? series.format(data[index]) : data[index];
+            // 绘制图形
+            if (color[index] !== '') {
+                // 绘制底部背景颜色矩形
+                context.setFillStyle(color[index])
+                context.fillRect(item.x - measureText(formatVal) * 3 / 4, item.y - measureText(formatVal) * 9 / 4, measureText(formatVal) * 7 / 4, measureText(formatVal) * 7 / 4)
+            }
+            // 绘制字母序号，如A、B、C
+            context.setFillStyle('#ffffff');
+            context.fillText(formatVal, item.x - measureText(formatVal) / 2, item.y - measureText(formatVal) * 3 / 4);
+        }
+    });
+
+    // 绘制圆标点
+    points.forEach(function (item, index) {
+        if (item !== null) {
+            var formatVal = series.format ? series.format(data[index]) : data[index];
+            if (color[index] !== '') {
+                // 设置圆标点参数
+                context.setStrokeStyle("#ffffff");
+                context.setLineWidth(1);
+                context.setFillStyle('#88cdf1');
+                context.moveTo(item.x + 3.5, item.y);
+                context.arc(item.x, item.y, 3, 0, 2 * Math.PI, false);
+            }
+        }
+    });
+    context.closePath();
+    context.fill();
+    context.stroke();
+
+    // context.closePath();
+    // context.stroke();
 }
 
 function drawRadarLabel(angleList, radius, centerPosition, opts, config, context) {
@@ -1076,7 +1132,6 @@ function drawAreaDataPoints(series, opts, config, context) {
 
     var _calYAxisData2 = calYAxisData(series, opts, config),
         ranges = _calYAxisData2.ranges;
-
     var _getXAxisPoints2 = getXAxisPoints(opts.categories, opts, config),
         xAxisPoints = _getXAxisPoints2.xAxisPoints,
         eachSpacing = _getXAxisPoints2.eachSpacing;
@@ -1100,10 +1155,10 @@ function drawAreaDataPoints(series, opts, config, context) {
         splitPointList.forEach(function (points) {
             // 绘制区域数据
             context.beginPath();
-            context.setStrokeStyle(eachSeries.color);
+            context.setStrokeStyle(eachSeries.stroke);
             context.setFillStyle(eachSeries.color);
-            context.setGlobalAlpha(0.6);
-            context.setLineWidth(2);
+            context.setGlobalAlpha(0.6); // 区块的透明度
+            context.setLineWidth(1);
             if (points.length > 1) {
                 var firstPoint = points[0];
                 var lastPoint = points[points.length - 1];
@@ -1136,14 +1191,16 @@ function drawAreaDataPoints(series, opts, config, context) {
                 context.moveTo(item.x - eachSpacing / 2, item.y);
             }
             context.closePath();
+            context.stroke();
             context.fill();
             context.setGlobalAlpha(1);
         });
 
         if (opts.dataPointShape !== false) {
             var shape = config.dataPointShape[seriesIndex % config.dataPointShape.length];
-            drawPointShape(points, eachSeries.color, shape, context);
+            drawPointShape(points, eachSeries.pointColor, shape, context);
         }
+
     });
     if (opts.dataLabel !== false && process === 1) {
         series.forEach(function (eachSeries, seriesIndex) {
@@ -1155,6 +1212,14 @@ function drawAreaDataPoints(series, opts, config, context) {
 
     if (opts.tooltip && opts.tooltip.textList && opts.tooltip.textList.length && process === 1) {
         drawToolTip(opts.tooltip.textList, opts.tooltip.offset, opts, config, context);
+    }
+
+    if (opts.dataKeyLabel !== false && process === 1) { // 画序号标注
+        series.forEach(function (eachSeries, seriesIndex) {
+            var data = eachSeries.data;
+            var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
+            drawRankLabel(points, eachSeries, config, context);
+        });
     }
 
     return {
@@ -1239,6 +1304,82 @@ function drawLineDataPoints(series, opts, config, context) {
     };
 }
 
+// （源码）
+// function drawXAxis(categories, opts, config, context) {
+//     var _getXAxisPoints4 = getXAxisPoints(categories, opts, config),
+//         xAxisPoints = _getXAxisPoints4.xAxisPoints,
+//         startX = _getXAxisPoints4.startX,
+//         endX = _getXAxisPoints4.endX,
+//         eachSpacing = _getXAxisPoints4.eachSpacing;
+
+//     var startY = opts.height - config.padding - config.xAxisHeight - config.legendHeight;
+//     var endY = startY + config.xAxisLineHeight;
+//     // 绘制X轴刻度（源码）
+//     context.beginPath();
+//     context.setStrokeStyle(opts.xAxis.gridColor || "#cccccc");
+//     context.setLineWidth(1);
+//     context.moveTo(startX, startY);
+//     context.lineTo(endX, startY);
+//     if (opts.xAxis.disableGrid !== true) {
+//         if (opts.xAxis.type === 'calibration') {
+//             xAxisPoints.forEach(function (item, index) {
+//                 if (index > 0) {
+//                     context.moveTo(item - eachSpacing / 2, startY);
+//                     context.lineTo(item - eachSpacing / 2, startY + 4);
+//                 }
+//             });
+//         } else {
+//             xAxisPoints.forEach(function (item, index) {
+//                 context.moveTo(item, startY);
+//                 context.lineTo(item, endY);
+//             });
+//         }
+//     }
+//     context.closePath();
+//     context.stroke();
+
+//     // 对X轴列表做抽稀处理
+//     var validWidth = opts.width - 2 * config.padding - config.yAxisWidth - config.yAxisTitleWidth; // X轴的可用长度
+//     var maxXAxisListLength = Math.min(categories.length, Math.ceil(validWidth / config.fontSize / (1.5 + 3))); // 可以绘制的文本最大个数
+//     var ratio = Math.ceil(categories.length / maxXAxisListLength); // 绘制的个数间隔
+
+//     categories = categories.map(function (item, index) {
+//         return index % ratio !== 0 ? '' : item;
+//     });
+
+//     if (config._xAxisTextAngle_ === 0) {
+//         context.beginPath();
+//         context.setFontSize(config.fontSize);
+//         context.setFillStyle(opts.xAxis.fontColor || '#666666');
+//         categories.forEach(function (item, index) {
+//             var offset = eachSpacing / 2 - measureText(item) / 2;
+//             context.fillText(item, xAxisPoints[index] + offset, startY + config.fontSize + 5);
+//         });
+//         context.closePath();
+//         context.stroke();
+//     } else {
+//         categories.forEach(function (item, index) {
+//             context.save();
+//             context.beginPath();
+//             context.setFontSize(config.fontSize);
+//             context.setFillStyle(opts.xAxis.fontColor || '#666666');
+//             var textWidth = measureText(item);
+//             var offset = eachSpacing / 2 - textWidth;
+
+//             var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + config.fontSize / 2 + 5, opts.height),
+//                 transX = _calRotateTranslate.transX,
+//                 transY = _calRotateTranslate.transY;
+
+//             context.rotate(-1 * config._xAxisTextAngle_);
+//             context.translate(transX, transY);
+//             context.fillText(item, xAxisPoints[index] + offset, startY + config.fontSize + 5);
+//             context.closePath();
+//             context.stroke();
+//             context.restore();
+//         });
+//     }
+// }
+
 function drawXAxis(categories, opts, config, context) {
     var _getXAxisPoints4 = getXAxisPoints(categories, opts, config),
         xAxisPoints = _getXAxisPoints4.xAxisPoints,
@@ -1248,7 +1389,37 @@ function drawXAxis(categories, opts, config, context) {
 
     var startY = opts.height - config.padding - config.xAxisHeight - config.legendHeight;
     var endY = startY + config.xAxisLineHeight;
+    // 要选择性绘制的点
+    var labelIndex = opts.labelIndex
+    // 用于保存X轴数据点
+    var xPoints = []
+    // 更具坐标轴刻度值进行映射取中间点
+    xPoints = xAxisPoints.map(function (item, index) {
+        return xAxisPoints[index] + Math.round(eachSpacing / 2);;
+    });
+    // 删除最后一个多余的点
+    xPoints.pop();
 
+    // 找出需要绘制的点，抽稀处理
+    for (var i = 0; i < categories.length; i++) {
+        let noFind = true;
+        for (var j = 0; j < labelIndex.length; j++) {
+            if (categories[i] == labelIndex[j]) {
+                categories[i] = labelIndex[j];
+                noFind = false;
+            }
+        }
+        if (noFind) {
+            categories[i] = '';
+        }
+    }
+    
+    // 对X轴刻度也进行抽稀处理，找出需要绘制的X轴刻度
+    xPoints = xPoints.map(function (item, index) {
+        return categories[index] !== '' ? item : 0;
+    });
+
+    // start 绘制X轴刻度
     context.beginPath();
     context.setStrokeStyle(opts.xAxis.gridColor || "#cccccc");
     context.setLineWidth(1);
@@ -1256,14 +1427,16 @@ function drawXAxis(categories, opts, config, context) {
     context.lineTo(endX, startY);
     if (opts.xAxis.disableGrid !== true) {
         if (opts.xAxis.type === 'calibration') {
-            xAxisPoints.forEach(function (item, index) {
-                if (index > 0) {
-                    context.moveTo(item - eachSpacing / 2, startY);
-                    context.lineTo(item - eachSpacing / 2, startY + 4);
-                }
+            xPoints.forEach(function (item, index) {
+                // if (index > 0) {
+                    if (item > 0) {
+                        context.moveTo(item, startY);
+                        context.lineTo(item, startY + 4);
+                    }
+                // }
             });
         } else {
-            xAxisPoints.forEach(function (item, index) {
+            xPoints.forEach(function (item, index) {
                 context.moveTo(item, startY);
                 context.lineTo(item, endY);
             });
@@ -1271,47 +1444,19 @@ function drawXAxis(categories, opts, config, context) {
     }
     context.closePath();
     context.stroke();
+    // end
 
-    // 对X轴列表做抽稀处理
-    var validWidth = opts.width - 2 * config.padding - config.yAxisWidth - config.yAxisTitleWidth;
-    var maxXAxisListLength = Math.min(categories.length, Math.ceil(validWidth / config.fontSize / 1.5));
-    var ratio = Math.ceil(categories.length / maxXAxisListLength);
-
-    categories = categories.map(function (item, index) {
-        return index % ratio !== 0 ? '' : item;
+    // start 绘制X轴列表文案
+    context.beginPath();
+    context.setFontSize(config.fontSize);
+    context.setFillStyle(opts.xAxis.fontColor || '#666666');
+    categories.forEach(function (item, index) {
+        var offset = eachSpacing / 2 - measureText(item) / 2;
+        context.fillText(item, xAxisPoints[index] + offset, startY + config.fontSize + 5);
     });
-
-    if (config._xAxisTextAngle_ === 0) {
-        context.beginPath();
-        context.setFontSize(config.fontSize);
-        context.setFillStyle(opts.xAxis.fontColor || '#666666');
-        categories.forEach(function (item, index) {
-            var offset = eachSpacing / 2 - measureText(item) / 2;
-            context.fillText(item, xAxisPoints[index] + offset, startY + config.fontSize + 5);
-        });
-        context.closePath();
-        context.stroke();
-    } else {
-        categories.forEach(function (item, index) {
-            context.save();
-            context.beginPath();
-            context.setFontSize(config.fontSize);
-            context.setFillStyle(opts.xAxis.fontColor || '#666666');
-            var textWidth = measureText(item);
-            var offset = eachSpacing / 2 - textWidth;
-
-            var _calRotateTranslate = calRotateTranslate(xAxisPoints[index] + eachSpacing / 2, startY + config.fontSize / 2 + 5, opts.height),
-                transX = _calRotateTranslate.transX,
-                transY = _calRotateTranslate.transY;
-
-            context.rotate(-1 * config._xAxisTextAngle_);
-            context.translate(transX, transY);
-            context.fillText(item, xAxisPoints[index] + offset, startY + config.fontSize + 5);
-            context.closePath();
-            context.stroke();
-            context.restore();
-        });
-    }
+    context.closePath();
+    context.stroke();
+    // end
 }
 
 function drawYAxis(series, opts, config, context) {
@@ -1417,7 +1562,7 @@ function drawLegend(series, opts, config, context) {
                     break;
                 default:
                     context.beginPath();
-                    context.setFillStyle(item.color);
+                    context.setFillStyle(item.pointColor); //area点的颜色
                     context.moveTo(startX, startY);
                     context.rect(startX, startY, 15, 10);
                     context.closePath();

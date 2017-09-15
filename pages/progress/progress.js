@@ -68,7 +68,7 @@ Page({
       //延时后直接跳转至指定页面
       setTimeout(function() {
         console.log('navigateToPage 跳转到结果页')
-        // let navTitle = '"' + this.data.keywordVal + '"' + '风口指数'
+        // let navTitle = '"' + this.data.keywordVal + '"' + '焦点指数'
         this.setData({
           crisisboxAreaShowed: true
         })
@@ -335,22 +335,21 @@ Page({
     console.log('searchHistorySetStorage')
     var curTime = new Date().getTime();
     var keyword = app.globalData.keywordVal
-    let source_keyword = app.globalData.keywordRuleVal.source_keyword
+    let searchTitle = app.globalData.searchTitle
     let keywordSearch = {
-      data: source_keyword,
+      data: searchTitle,
       time: curTime
     }
-    let keywordArr;
     // 从本地缓存中异步获取指定 key 对应的内容。
     wx.getStorage({
       key: 'search_history',
       success: function(res) {
-        keywordArr = res.data;
-        if (source_keyword != '') {
+        let keywordArr = res.data;
+        if (searchTitle != '') {
           let repeat = false;
           // 对关键词数组元素进行去重
           for ( let key in keywordArr) {
-            if (keywordArr[key].data == source_keyword) {
+            if (keywordArr[key].data == searchTitle) {
               repeat = true;
               keywordArr.splice(key, 1, keywordSearch)
             }
@@ -415,8 +414,8 @@ Page({
     console.log('progerss onReady')
     // 绘制canvas圆环进度条背景圆环
     this.canvasArcBackground()
-    let keywordVal = app.globalData.keywordRuleVal.source_keyword
-    let navTitle = '"' + keywordVal + '"' + '风口指数'
+    let searchTitle = app.globalData.searchTitle
+    let navTitle = '"' + searchTitle + '"' + '焦点指数'
     //动态设置当前页面导航条的标题
     wx.setNavigationBarTitle({
       title: navTitle,

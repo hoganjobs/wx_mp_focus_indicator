@@ -74,7 +74,6 @@ Page({
     console.log('index startSearchTap')
     //判断用户输入是否为空
     if (this.data.inputValue == '') {
-      console.log('keywordVal')
       wx.showModal({
         title: '请输入要查询的关键词',
         content: '',
@@ -91,7 +90,6 @@ Page({
     }
     //判断用户输入是否为单个字
     if (this.data.inputValue.length == 1) {
-      console.log('keywordVal')
       wx.showModal({
         title: '请输入正确长度的关键词',
         content: '',
@@ -311,7 +309,7 @@ Page({
       success: function(res) {
         console.log('search_history records:', res.data)
         console.log('search_history keywordVal:', keywordVal)
-        // 设置长度限制，清空搜索历史storage
+        // 设置长度限制，移除搜索历史storage最后一个关键词，遵循先进先出
         if (res.data.length > 20) {
           console.log(res.data)
           res.data.pop();
@@ -362,6 +360,7 @@ Page({
       }, 
       function(result) {
         console.log('successCb fi_keywords_extraction', result)
+        app.globalData.searchTitle = result.search_title;
         app.globalData.keywordRuleVal = result.keyword_rule;
         // 通过 WebSocket 连接发送消息，获取进度
         self.getSocketJsonrpcMessage()

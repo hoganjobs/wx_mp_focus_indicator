@@ -76,20 +76,20 @@
           <!-- 下一模块的顶部嵌入区域 -->
           <!-- <view class="pz_result_header_underline"></view> -->
         </view>
+        <!-- 媒体观点区域 -->
+        <view class="pz_result_article_title{{titleFixed ? ' pz_result_article_title_fixed ' : ''}}" id="articleTitleId" bindtap="">
+          <image style="width: 30px; height: 30px;" mode="{{item.mode}}" src="../../image/icon_viewpoint.svg"></image>
+          <text class="pz_result_title_text">媒体观点</text>
+          <text class="pz_result_title_text_count" wx:if="{{titleSignCount > 0}}">（{{titleSignCount}}条）</text>
+          <!-- 媒体分析报告页跳转按钮 -->
+          <button class="pz_analysis_btn" hover-class="pz_analysis_btn_hover" wx:if="{{resultArticleData.length > 0}}" bindtap="analysisTap">
+            <image style="width: 20px; height: 16px;" mode="{{item.mode}}" src="../../image/icon_analysis@2x.png"></image>
+            <text class="pz_analysis_btn_item">焦点分析</text>
+          </button>
+        </view>
         <view class="pz_result_content">
           <view class="pz_result_detail">
             <view class="pz_result_item">
-              <!-- 媒体观点区域 -->
-              <!-- <view class="pz_result_article_title" bindtap="snackbarTap"> -->
-              <view class="pz_result_article_title" bindtap="">
-                <image style="width: 30px; height: 30px;" mode="{{item.mode}}" src="../../image/icon_viewpoint.svg"></image>
-                <text class="pz_result_title_text">媒体观点</text>
-                <text class="pz_result_title_text_count" wx:if="{{titleSignCount > 0}}">（{{titleSignCount}}条）</text>
-                <!-- 媒体分析报告页跳转按钮 -->
-                <view class="pz_analysis_btn" wx:if="{{resultArticleData.length > 0}}" hidden="{{analysisBtnShowed}}" bindtap="analysisTap">
-                  <view class="pz_analysis_btn_item">+</view>
-                </view>
-              </view>
               <!-- 媒体列表数据加载中提示 -->
               <view class="pz_result_article_listr_loading" hidden="{{resultArticleLoadShowed}}">
                 <text>加载中 </text>
@@ -108,7 +108,7 @@
                 <text>加载列表失败，请重试 </text>
               </view>
               <!-- 媒体观点所有列表区域 -->
-              <view class="pz_result_article_listr">
+              <view class="pz_result_article_listr" style="margin-top:{{titleFixed ? 49 : 0}}px">
                 <view wx:for="{{resultArticleData}}" wx:key="resultArticleId" wx:for-item="resultArticle">
                   <view class="pz_result_artcile_item">
                     <view class="pz_result_publish_date" id="{{'inToView'+resultArticle.publish_at}}" bindtap="">
@@ -190,7 +190,7 @@
 <!-- 台风预警等级模板 start-->
 <!-- 无风等级模板 -->
 <template name="0">
-  <view class="pz_result_article_list_typhoon">10</view>
+  <view class="pz_result_article_list_typhoon"></view>
 </template>
 <!-- 小风等级模板 -->
 <template name="11">

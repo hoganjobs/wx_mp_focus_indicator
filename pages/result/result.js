@@ -14,6 +14,8 @@ Page({
     resultArticleLoadNextShowed: true,
     resultArticleNoDataShowed: true,
     resultArticleFailDataShowed: true,
+    titleFixed: false, // 用于控制媒体观点标题栏顶部定位
+    titleOffsetTop: 0, // 用于存储媒体观点标题栏上边界距离
     pfFinalIcoShow: {
       app: true,
       portals: true,
@@ -750,12 +752,59 @@ Page({
     }
   },
 
+  getFields: function(){
+    wx.createSelectorQuery().select('#the-id').fields({
+      dataset: true,
+      size: true,
+      scrollOffset: true,
+      properties: ['scrollX', 'scrollY']
+    }, function(res){
+      console.log('res.dataset', res.dataset)
+      console.log('res.width', res.width)
+      console.log('res.height', res.height)
+      console.log('res.scrollLeft', res.scrollLeft)
+      console.log('res.scrollTop', res.scrollTop)
+      console.log('res.scrollX', res.scrollX)
+      console.log('res.scrollY', res.scrollY)
+      // res.dataset    // 节点的dataset
+      // res.width      // 节点的宽度
+      // res.height     // 节点的高度
+      // res.scrollLeft // 节点的水平滚动位置
+      // res.scrollTop  // 节点的竖直滚动位置
+      // res.scrollX    // 节点 scroll-x 属性的当前值
+      // res.scrollY    // 节点 scroll-x 属性的当前值
+    }).exec()
+  },
+
+  /**
+   * 获取媒体观点标题栏节点信息函数
+   * 添加节点的布局位置的查询请求，相对于显示区域，以像素为单位。
+   * 返回的节点信息中，每个节点的位置用left、right、top、bottom、width、height字段描述。
+   */
+  getArticleTitleRect: function(){
+    var self = this
+    wx.createSelectorQuery().select('#articleTitleId').boundingClientRect(function(rect){
+      // 媒体观点标题栏上边界距离
+      self.data.titleOffsetTop = rect.top;
+      // rect.id      // 节点的ID
+      // rect.dataset // 节点的dataset
+      // rect.left    // 节点的左边界坐标
+      // rect.right   // 节点的右边界坐标
+      // rect.top     // 节点的上边界坐标
+      // rect.bottom  // 节点的下边界坐标
+      // rect.width   // 节点的宽度
+      // rect.height  // 节点的高度
+    }).exec()
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
     console.log('result onLoad')
     console.log(options)
+    // 获取媒体观点标题栏节点信息
+    this.getArticleTitleRect()
     // 设置可滚动视图区域高度为设备可使用设备窗口高度
     // this.setData({
     //   windowHeight: app.globalData.systemInfo.windowHeight
@@ -768,8 +817,8 @@ Page({
    */
   onReady: function () {
     console.log('result onReady')
-    let keywordVal = app.globalData.keywordRuleVal.source_keyword
-    let navTitle = '"' + keywordVal + '"' + '风口指数'
+    let searchTitle = app.globalData.searchTitle
+    let navTitle = '"' + searchTitle + '"' + '焦点指数'
     //动态设置当前页面导航条的标题
     wx.setNavigationBarTitle({
       title: navTitle,
@@ -858,7 +907,7 @@ Page({
     let keyword_rule = app.globalData.keywordRuleVal
     let source_keyword = app.globalData.keywordRuleVal.source_keyword
     let url = '/pages/resultLoad/resultLoad?keywordRuleVal=' + JSON.stringify(keyword_rule)
-    let title = '"' + source_keyword + '"' + '风口指数'
+    let title = '"' + source_keyword + '"' + '焦点指数'
     if (res.from === 'menu') {
       // 来自页面内转发按钮
       console.log('result onShareAppMessage from menu')
@@ -877,6 +926,27 @@ Page({
         // 转发失败
         console.log('fail result onShareAppMessage')
       }
+    }
+  },
+
+  /**
+   * 页面滚动触发事件的处理函数
+   */
+  onPageScroll: function(options) {
+    // Do something when page scroll
+    // console.log('result onPageScroll')
+    let scrollTop = options.scrollTop
+    let titleOffsetTop = this.data.titleOffsetTop
+    if (scrollTop > titleOffsetTop) {
+      this.setData({
+        titleFixed: true
+      })
+      // console.log('result onPageScroll titleFixed true')
+    } else if (scrollTop < titleOffsetTop) {
+      this.setData({
+        titleFixed: false
+      })
+      // console.log('result onPageScroll titleFixed false')
     }
   }
 })

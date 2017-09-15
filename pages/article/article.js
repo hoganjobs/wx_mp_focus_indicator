@@ -234,7 +234,8 @@ Page({
    */
   onReady: function (options) {
     console.log('article onReady')
-    let navTitle = '"' + this.data.keyword_rule.source_keyword + '"' + '风口指数（详情）'
+    let searchTitle = app.globalData.searchTitle
+    let navTitle = '"' + searchTitle + '"' + '焦点指数（详情）'
     //动态设置当前页面导航条的标题
     wx.setNavigationBarTitle({
       title: navTitle,
@@ -301,7 +302,7 @@ Page({
     let keyword_rule = this.data.keyword_rule
     keyword_rule = JSON.stringify(keyword_rule)
     let url = '/pages/article/article?title_sign=' + title_sign + '&keyword_rule=' + keyword_rule;
-    let title = '"' + this.data.keyword_rule.source_keyword + '"' + '风口指数（详情）'
+    let title = '"' + this.data.keyword_rule.source_keyword + '"' + '焦点指数（详情）'
     if (res.from === 'menu') {
       // 来自页面内转发按钮
       console.log('article onShareAppMessage from menu')

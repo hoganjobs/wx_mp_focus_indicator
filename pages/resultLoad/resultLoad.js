@@ -41,6 +41,7 @@ Page({
       }, 
       function(result) {
         console.log('successCb fi_keywords_extraction', result)
+        app.globalData.searchTitle = result.search_title;
         app.globalData.keywordRuleVal = result.keyword_rule;
         self.getSocketJsonrpcMessage()
       },

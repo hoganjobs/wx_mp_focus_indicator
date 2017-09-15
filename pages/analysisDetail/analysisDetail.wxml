@@ -1,18 +1,9 @@
-<!--analysisReport.wxml-->
+<!--pages/analysisDetail/analysisDetail.wxml-->
 <view class="container">
-<!-- 	<view class="pz_canvas_full" style="">
-		<canvas canvas-id="areaCanvasFull" disable-scroll="true" class="" style="" bindtouchstart=""></canvas>
-		<view class="pz_canvas_fullview" wx:if="{{analysisData.length > 0}}" catchtap="restoreviewTap">
-			<text>restore</text>
-		</view>
-	</view> -->
 	<!-- canvas图表区域 -->
-	<view class="pz_canvas" style="width:{{windowWidth}}px;transform: rotate({{chartsDeg}}deg);" wx:if="{{analysisData.length > 0}}">
+<!-- 	<view class="pz_canvas" style="width:{{windowWidth}}px;transform: rotate({{chartsDeg}}deg);" hidden="{{analysisCanvasShowed}}">
 		<canvas canvas-id="areaCanvas" disable-scroll="true" class="canvas" style="width:{{windowWidth}}px" bindtouchstart=""></canvas>
-<!-- 		<view class="pz_canvas_fullview" wx:if="{{analysisData.length > 0}}" catchtap="fullviewTap">
-			<text>FULL</text>
-		</view> -->
-	</view>
+	</view> -->
 	<view class="pz_analysis_listr_loading" hidden="{{analysisData.length > 0}}">
 		<view class="sk-circle">
 		  <view class="sk-circle1 sk-child"></view>
@@ -29,28 +20,42 @@
 		  <view class="sk-circle12 sk-child"></view>
 		</view>
 		<view class="pz_analysis_listr_loading_text">
-			<text>亲，我们已经在为您全力分析！请耐心等待！</text>
+			<text>亲，已经在全力加载中！请耐心等待！</text>
 		</view>
 	</view>
 	<!-- 详情列表区域 -->
 	<view class="pz_analysis_list_wrap" wx:if="{{analysisData.length > 0}}">
 		<view class="pz_analysis_list_head" >
-			<!-- <view class="pz_analysis_list_head_right" hover-class="pz_analysis_list_head_right_hover" bindtap="showAllTap">显示全部</view> -->
-			<view class="pz_analysis_list_head_title">焦点头条</view>
+			<view class="pz_analysis_list_head_title">焦点详情</view>
 		</view>
 		<scroll-view scroll-y style="height:{{scrollHeight}}px;" bindscrolltoupper="" bindscrolltolower="" bindscroll="" scroll-into-view="" scroll-top="">
 		  <view wx:for="{{analysisData}}" wx:key="analysisId" wx:for-index="idx" wx:for-item="analysisItem">
-		  	<view class="pz_analysis_list" hover-class="pz_analysis_list_hover" data-id="{{analysisItem.id}}" data-label="{{analysisItem.label}}" bindtap="analysisDetailTap">
-		  		<view class="pz_analysis_list_left" style="background-color:{{rankColor[idx]}};">
-		  			<view class="">{{analysisItem.key}}</view>
+		  	<view class="pz_analysis_list" hover-class="pz_analysis_list_hover" data-id="{{idx}}" bindtap="loadMoreTap">
+		  		<view class="pz_analysis_list_left" style="">
+		  			<view class="">{{idx+1}}</view>
+		  		</view>
+		  		<!-- wx:if="{{analysisItem.media_wind > 0}}" -->
+		  		<view class="pz_analysis_list_right" wx:if="{{analysisItem.media_wind > 0}}">
+		  		  <view class="pz_analysis_list_wind_grading">
+		  		    <view class="pz_analysis_list_wind_top">
+		  		      <image class="pz_analysis_list_wind_img" style="width: 22px; height: 22px;" mode="{{item.mode}}" src="../../image/icon_fengli.svg"></image>
+		  		      <view class="pz_analysis_list_wind_text">风力</view>
+		  		    </view>
+		  		    <view class="pz_analysis_list_wind_bottom">
+		  		      <!-- <view class="pz_analysis_list_wind_level">最大</view> -->
+		  		      <view class="pz_analysis_list_wind_level_num">{{analysisItem.media_wind}}</view>
+		  		      <view class="pz_analysis_list_wind_level">级</view>
+		  		    </view>
+		  		  </view>
 		  		</view>
 		  		<view class="pz_analysis_list_item">
 		  		  <view class="pz_analysis_list_title">{{analysisItem.title}}</view>
+		  		  <view class="pz_analysis_list_abstract" hidden="{{currentItem[idx]==idx?false:true}}">{{analysisItem.abstract}}</view>
 		  		</view>
 		  		<view class="pz_analysis_list_bottom" catchtap="">
 		  			<view class="pz_analysis_list_media">{{analysisItem.media_name}}</view>
 		  			<view class="pz_analysis_list_publish_at">{{analysisItem.publish_at}}</view>
-		  			<view class="pz_analysis_list_right">{{analysisItem.article_num}}条相关 </view>
+		  			<view class="pz_analysis_list_sensitive" wx:if="{{analysisItem.is_sensitive}}">敏感观点</view>
 		  		</view>
 		  	</view>
 		  </view>

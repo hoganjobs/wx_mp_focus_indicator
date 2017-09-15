@@ -198,7 +198,8 @@ page {
 .pz_result_article_list_wind_level_num {
 	/*margin-right: 5px;*/
 	padding: 0 1px;
-	font-size: 11px;
+	line-height: 11px;
+	font-size: 10px;
 	color: #fff;
 }
 .pz_result_article_list_wind_level {
