@@ -14,6 +14,7 @@ Page({
     resultArticleLoadNextShowed: true,
     resultArticleNoDataShowed: true,
     resultArticleFailDataShowed: true,
+    // analysisBtnShowed: true, //用于控制焦点分析按钮显示状态
     titleFixed: false, // 用于控制媒体观点标题栏顶部定位
     titleOffsetTop: 0, // 用于存储媒体观点标题栏上边界距离
     pfFinalIcoShow: {
@@ -57,6 +58,7 @@ Page({
     windowHeight: 667, //
     toView: 'inToView01',
     map: {}, //定义一个对象用于存储列表数据不同项分类（日期排序）
+    analysisBtnAnimationData: {}, // 定义焦点分析按钮的动画对象
   },
   scrollToViewFn: function (e) { 
    this.setData({ 
@@ -629,8 +631,11 @@ Page({
           this.setData({
             resultArticleLoadShowed: true,
             resultArticleFailDataShowed: true,
+            analysisBtnShowed: true,
             resultArticleData: dest
           });
+          // 焦点分析按钮动画
+          this.analysisBtnAnimation()
         } catch (err) {
           console.log(err)
         }
@@ -752,6 +757,10 @@ Page({
     }
   },
 
+  /**
+   * 获取节点的相关信息，需要获取的字段在fields中指定。
+   * 返回值是nodesRef对应的selectorQuery。
+   */ 
   getFields: function(){
     wx.createSelectorQuery().select('#the-id').fields({
       dataset: true,
@@ -795,6 +804,49 @@ Page({
       // rect.width   // 节点的宽度
       // rect.height  // 节点的高度
     }).exec()
+  },
+
+  /**
+   * 焦点分析按钮的动画。
+   */ 
+  analysisBtnAnimation: function(){
+    console.log('result analysisBtnAnimation')
+    var self = this
+    // 创建按钮部分的动画实例
+    var animation = wx.createAnimation({
+      duration: 500,
+      timingFunction: 'ease-out',
+    })
+    this.animation = animation
+    // 按钮部分动画，先上移，然后下移回原位置，重复多次实现按钮弹跳效果
+    for (var i = 0; i < 3; i++) {
+      this.animation.translateY(-12).step()
+      this.animation.translateY(0).step({ duration: 300, timingFunction: 'ease', delay: 50})
+    }
+    this.animation.translateY(-12).step()
+    this.animation.translateY(0).step({ duration: 400, timingFunction: 'linear', delay: 50})
+
+    // 创建阴影部分的动画实例
+    var animationShadow = wx.createAnimation({
+      duration: 500,
+      timingFunction: 'ease-out',
+    })
+    // 阴影部分动画，先缩小，然后放大回原型，配合按钮动画的频次执行
+    for (var i = 0; i < 3; i++) {
+      animationShadow.scale(0.5).step()
+      animationShadow.scale(1).step({ duration: 300, timingFunction: 'ease', delay: 50})
+    }
+    animationShadow.scale(0.5).step()
+    animationShadow.scale(1).step({ duration: 400, timingFunction: 'linear', delay: 50})
+    animationShadow.opacity(0).step({ duration: 200, timingFunction: 'linear'})
+
+    // 延时100毫秒后执行
+    setTimeout(function() {
+      this.setData({
+        analysisBtnAnimationData:animation.export(),
+        analysisBtnShadowAnimationData: animationShadow.export()
+      })
+    }.bind(this), 100)
   },
 
   /**
@@ -935,18 +987,23 @@ Page({
   onPageScroll: function(options) {
     // Do something when page scroll
     // console.log('result onPageScroll')
+    let system = app.globalData.systemInfo.system // 获取操作系统版本号
     let scrollTop = options.scrollTop
     let titleOffsetTop = this.data.titleOffsetTop
-    if (scrollTop > titleOffsetTop) {
-      this.setData({
-        titleFixed: true
-      })
-      // console.log('result onPageScroll titleFixed true')
-    } else if (scrollTop < titleOffsetTop) {
-      this.setData({
-        titleFixed: false
-      })
-      // console.log('result onPageScroll titleFixed false')
+    // iOS下才开启标题栏顶部固定
+    if (system.indexOf('iOS') !== -1) {
+      // 判断滚动位置
+      if (scrollTop > titleOffsetTop) {
+        this.setData({
+          titleFixed: true
+        })
+        // console.log('result onPageScroll titleFixed true')
+      } else if (scrollTop < titleOffsetTop) {
+        this.setData({
+          titleFixed: false
+        })
+        // console.log('result onPageScroll titleFixed false')
+      }
     }
   }
 })

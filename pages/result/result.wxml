@@ -82,10 +82,11 @@
           <text class="pz_result_title_text">媒体观点</text>
           <text class="pz_result_title_text_count" wx:if="{{titleSignCount > 0}}">（{{titleSignCount}}条）</text>
           <!-- 媒体分析报告页跳转按钮 -->
-          <button class="pz_analysis_btn" hover-class="pz_analysis_btn_hover" wx:if="{{resultArticleData.length > 0}}" bindtap="analysisTap">
-            <image style="width: 20px; height: 16px;" mode="{{item.mode}}" src="../../image/icon_analysis@2x.png"></image>
+          <button class="pz_analysis_btn" hover-class="pz_analysis_btn_hover" wx:if="{{analysisBtnShowed}}" bindtap="analysisTap" animation="{{analysisBtnAnimationData}}">
+            <image style="width: 17px; height: 14px;" mode="{{item.mode}}" src="../../image/icon_analysis@2x.png"></image>
             <text class="pz_analysis_btn_item">焦点分析</text>
           </button>
+          <view class="pz_analysis_btn_shadow" wx:if="{{analysisBtnShowed}}" animation="{{analysisBtnShadowAnimationData}}"></view>
         </view>
         <view class="pz_result_content">
           <view class="pz_result_detail">

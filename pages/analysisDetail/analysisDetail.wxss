@@ -13,6 +13,7 @@ page {
 }
 .pz_canvas {
 	padding-top: 10px;
+  background-color: #ffffff;
   position: relative;
 }
 .pz_canvas canvas {
@@ -21,7 +22,7 @@ page {
   /*transform: rotate(90deg);*/
 }
 /*------ 详情列表区域 start ------*/
-.pz_analysis_list_wrap {
+.pz_analysis_list_area {
   box-sizing: border-box;
   /*padding: 15px 15px;*/
   width: 100%;
@@ -31,13 +32,23 @@ page {
   width: 100%;
   height: 40px;
   box-sizing: border-box;
-  padding: 0 19px;
+  padding: 0 10px;
   background-color: #ededed;
-  border-bottom: 2px solid #ededed;
+  display: flex;
+  align-items: center;
 }
 .pz_analysis_list_head_title {
-  line-height: 50px;
-  font-size: 14px;
+  margin-left: 10px;
+  display: inline-block;
+  line-height: 16px;
+  font-size: 16px;
+  color: #1788fb;
+}
+.pz_analysis_list_head_count {
+  /*margin-left: 5px;*/
+  display: inline-block;
+  line-height: 16px;
+  font-size: 16px;
   color: #1788fb;
 }
 .pz_analysis_list_head_right {
@@ -49,63 +60,149 @@ page {
 .pz_analysis_list_head_right_hover {
   color: #4d9bfc;
 }
+.pz_analysis_list_wrap {
+  padding: 13px 10px;
+}
+.pz_analysis_listr {
+
+}
+.pz_analysis_list_item {
+  margin-bottom: 25px;
+}
+.pz_analysis_list_publish_date {
+  margin-bottom: 15px;
+  line-height: 14px;
+}
+.pz_analysis_list_publish_date_text{
+  line-height: 14px;
+  font-size: 14px;
+  color: #999999;
+}
 .pz_analysis_list {
-  width: 100%;
+  margin-bottom: 16px;
+  padding: 18px 15px 10px 15px;
+  background-color: #fff;
   box-sizing: border-box;
-  padding: 12px 19px;
-  /*overflow: hidden;*/
-  background-color: #ffffff;
-  border-bottom: 1px solid #ededed;
+  border-radius: 5px;
+  box-shadow: 0 4px 12px #d6dde0;
+  font-size: 14px;
+  color: #333;
+  overflow: hidden;
 }
 .pz_analysis_list_hover {
-  background-color: #f4f3f3;
+  background-color: #ededed;
 }
-.pz_analysis_list_left {
-  float: left;
-  width: 22px;
-  height: 15px;
-  margin-top: 4px;
-  border-radius: 3px;
-  line-height: 17px;
-  font-size: 15px;
-  color: #ffffff;
-  background-color: #4d9bfc;
+.pz_analysis_list_top {
   display: flex;
-  justify-content: center;
+  padding-bottom: 15px;
+}
+.pz_analysis_list_bottom {
+  padding-top: 8px;
+  border-top: 1px solid #ededed;
+  display: flex;
   align-items: center;
 }
+.pz_analysis_list_left {
+  flex: 1;
+}
+.pz_analysis_list_content {
+}
+.pz_analysis_list_text {
+  display: inline-block;
+  line-height: 24px;
+  font-size: 18px;
+  color: #555555;
+}
+.pz_analysis_list_media {
+
+}
+.pz_analysis_list_num {
+  display: inline-block;
+  margin-top: 13px;
+  margin-right: 10px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #3095fb;
+  line-height: 12px;
+  box-sizing: border-box;
+  border-color: #e5e5e5;
+  border-radius: 4px;
+  background-color: #e5f2ff;
+}
+.pz_analysis_list_media_name {
+  display: inline-block;
+  margin-right: 10px;
+  padding: 6px 8px;
+  font-size: 12px;
+  color: #3095fb;
+  line-height: 12px;
+  box-sizing: border-box;
+  border-color: #e5e5e5;
+  border-radius: 4px;
+  background-color: #e5f2ff;
+}
+.pz_analysis_list_point {
+  display: inline-block;
+  margin-top: 15px;
+  margin-right: 10px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #ff553e;
+  line-height: 12px;
+  box-sizing: border-box;
+  border-color: #e5e5e5;
+  border-radius: 4px;
+  background-color: #ffe9e9;
+}
+.pz_analysis_list_date {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 6px 8px;
+  font-size: 14px;
+  color: #999999;
+  line-height: 12px;
+  box-sizing: border-box;
+}
 .pz_analysis_list_right {
+  width: 49px;
+  margin-left: 15px;
+  padding-top: 3px;
+}
+.pz_analysis_list_mark {
   float: right;
-  margin-top: 4px;
+  margin-right: 14px;
+  width: 22px;
+  height: 18px;
+  background-color: #f28d3d;
+  border-radius: 4px;
+  text-align: center;
+  line-height: 18px;
+  font-size: 16px;
+  color: #ffffff;
 }
 .pz_analysis_list_wind_grading {
   width: 49px;
-  height: 46px;
   background-color: #1ecaf6;
   border-radius: 5px;
 }
 .pz_analysis_list_wind_top {
-  height: 32px;
+  height: 16px;
+  box-sizing: border-box;
 }
 .pz_analysis_list_wind_img {
   float: left;
-  padding: 5px;
+  padding: 2px 5px;
 }
 .pz_analysis_list_wind_text {
-  /*width: 16px;*/
-  height: 32px;
-  margin-left: 32px;
-  line-height: 10px;
+  line-height: 18px;
   text-align: center;
-  font-size: 10px;
+  font-size: 11px;
   color: #fff;
-  border-left: 1px solid #fff;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 .pz_analysis_list_wind_bottom {
-  /*text-align: center;*/
   height: 16px;
   box-sizing: border-box;
   border-top: 1px solid #fff;
@@ -114,7 +211,6 @@ page {
   align-items: center;
 }
 .pz_analysis_list_wind_level_num {
-  /*margin-right: 5px;*/
   padding: 0 1px;
   line-height: 11px;
   font-size: 10px;
@@ -125,19 +221,53 @@ page {
   font-size: 10px;
   color: #fff;
 }
+
+/*----------- last style start ------------*/
+
+/*.pz_analysis_data_item {
+  margin-bottom: 16px;
+}
+.pz_analysis_publish_date {
+  margin-bottom: 5px;
+  line-height: 14px;
+}
+.pz_analysis_publish_date_text{
+  line-height: 14px;
+  font-size: 14px;
+  color: #999999;
+}
+.pz_analysis_list {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 15px 5px 15px;
+  background-color: #ffffff;
+  border-bottom: 2px solid #ededed;
+  border-radius: 5px;
+}
+.pz_analysis_list_hover {
+  background-color: #f4f3f3;
+}
 .pz_analysis_list_item {
-  margin: 0 52px 0 33px;
+  margin-right: 65px;
   font-size: 14px;
   color: #999999;
 }
 .pz_analysis_list_title {
+  line-height: 22px;
   font-size: 16px;
   color: #333333;
 }
+.pz_analysis_list_abstract {
+  color: #666666;
+}
 .pz_analysis_list_bottom {
-  margin-left: 33px;
   font-size: 13px;
   color: #999999;
+  display: flex;
+  align-items: center;
+}
+.pz_analysis_list_left {
+  flex: 1;
 }
 .pz_analysis_list_media {
   display: inline-block;
@@ -150,13 +280,56 @@ page {
   display: inline-block;
   margin-left: 10px;
 }
+.pz_analysis_list_right {
+  float: right;
+}
+.pz_analysis_list_wind_grading {
+  margin-top: 2px;
+  width: 49px;
+  background-color: #1ecaf6;
+  border-radius: 5px;
+}
+.pz_analysis_list_wind_top {
+  height: 15px;
+  box-sizing: border-box;
+}
+.pz_analysis_list_wind_text {
+  line-height: 15px;
+  text-align: center;
+  font-size: 11px;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.pz_analysis_list_wind_bottom {
+  height: 15px;
+  box-sizing: border-box;
+  border-top: 1px solid #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.pz_analysis_list_wind_level_num {
+  padding: 0 1px;
+  line-height: 11px;
+  font-size: 11px;
+  color: #fff;
+}
+.pz_analysis_list_wind_level {
+  line-height: 11px;
+  font-size: 11px;
+  color: #fff;
+}
 .pz_active_item{
   color: #4d9bfc;
 }
 .pz_active_rank{
   color: #ffffff;
   background-color: #4d9bfc;
-}
+}*/
+/*----------- last style end ------------*/
+
 /*------ 详情列表区域 end ------*/
 
 /*------ 加载提示区域 start ------*/

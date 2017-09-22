@@ -95,11 +95,11 @@ page {
 .pz_analysis_list_left {
 	float: left;
   width: 22px;
-  height: 15px;
+  height: 16px;
 	margin-top: 4px;
   border-radius: 3px;
-	line-height: 17px;
-	font-size: 15px;
+	line-height: 16px;
+	font-size: 16px;
   color: #ffffff;
   /*background-color: #4d9bfc;*/
   display: flex;

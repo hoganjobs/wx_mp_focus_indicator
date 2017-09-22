@@ -165,7 +165,7 @@ function calRotateTranslate(x, y, h) {
 }
 
 function createCurveControlPoints(points, i) {
-
+    // console.log('createCurveControlPoints', points, i)
     function isNotMiddlePoint(points, i) {
         if (points[i - 1] && points[i + 1]) {
             return points[i].y >= Math.max(points[i - 1].y, points[i + 1].y) || points[i].y <= Math.min(points[i - 1].y, points[i + 1].y);
@@ -198,11 +198,28 @@ function createCurveControlPoints(points, i) {
     }
 
     // fix issue https://github.com/xiaolin3303/wx-charts/issues/79
-    if (isNotMiddlePoint(points, i + 1)) {
-        pBy = points[i + 1].y;
+    // if (isNotMiddlePoint(points, i + 1)) {
+    //     pBy = points[i + 1].y
+    // }
+    // if (isNotMiddlePoint(points, i)) {
+    //     pAy = points[i].y;
+    // }
+
+    // console.log('createCurveControlPoints points', points[i], i)
+    // console.log('createCurveControlPoints pAy', pAy, i)
+    // console.log('createCurveControlPoints pBy', pBy, i)
+
+    // fix: 增加判断pAy、pBy是否在绘制曲线的两点Y值之间，限制pAy、pBy的取值
+    if (pAy >= Math.max(points[i].y, points[i + 1].y)) {
+        pAy = Math.max(points[i].y, points[i + 1].y);
+    } else if (pAy <= Math.min(points[i].y, points[i + 1].y)) {
+        pAy = Math.min(points[i].y, points[i + 1].y);
     }
-    if (isNotMiddlePoint(points, i)) {
-        pAy = points[i].y;
+
+    if (pBy >= Math.max(points[i].y, points[i + 1].y)) {
+        pBy = Math.max(points[i].y, points[i + 1].y);
+    } else if (pBy <= Math.min(points[i].y, points[i + 1].y)) {
+        pBy = Math.min(points[i].y, points[i + 1].y)
     }
 
     return {
@@ -674,6 +691,8 @@ function getYAxisTextList(series, opts, config) {
     if (typeof opts.yAxis.max === 'number') {
         maxData = Math.max(opts.yAxis.max, maxData);
     }
+    // 为解决字母标注超出边界问题，增加最大高度(自定义加的)
+    maxData = maxData + 2
 
     // fix issue https://github.com/xiaolin3303/wx-charts/issues/9
     if (minData === maxData) {
@@ -827,8 +846,17 @@ function drawRankLabel(points, series, config, context) {
             // 绘制图形
             if (color[index] !== '') {
                 // 绘制底部背景颜色矩形
+                // context.beginPath();
+                // context.setFontSize(config.fontSize);
                 context.setFillStyle(color[index])
-                context.fillRect(item.x - measureText(formatVal) * 3 / 4, item.y - measureText(formatVal) * 9 / 4, measureText(formatVal) * 7 / 4, measureText(formatVal) * 7 / 4)
+                // // 先找出四个圆倒角，再闭合路径绘制出带圆角矩形
+                // context.arc(item.x - measureText(formatVal) * 3 / 4, item.y - measureText(formatVal) * 7 / 4, measureText(formatVal) * 1 / 4, Math.PI, 1.5 * Math.PI)
+                // context.arc(item.x + measureText(formatVal) * 3 / 4, item.y - measureText(formatVal) * 7 / 4, measureText(formatVal) * 1 / 4, 1.5 * Math.PI, 0)
+                // context.arc(item.x + measureText(formatVal) * 3 / 4, item.y - measureText(formatVal) * 3 / 4, measureText(formatVal) * 1 / 4, 0, 0.5 * Math.PI)
+                // context.arc(item.x - measureText(formatVal) * 3 / 4, item.y - measureText(formatVal) * 3 / 4, measureText(formatVal) * 1 / 4, 0.5 * Math.PI, Math.PI)
+                // context.closePath();
+                // context.fill();
+                context.fillRect(item.x - measureText(formatVal) * 4 / 4, item.y - measureText(formatVal) * 8 / 4, measureText(formatVal) * 8 / 4, measureText(formatVal) * 6 / 4)
             }
             // 绘制字母序号，如A、B、C
             context.setFillStyle('#ffffff');
@@ -837,16 +865,19 @@ function drawRankLabel(points, series, config, context) {
     });
 
     // 绘制圆标点
+    context.beginPath();
+    context.setFontSize(config.fontSize);
     points.forEach(function (item, index) {
         if (item !== null) {
             var formatVal = series.format ? series.format(data[index]) : data[index];
-            if (color[index] !== '') {
+            // if (color[index] !== '') {
+            if (series.data[index] !== 0) {
                 // 设置圆标点参数
-                context.setStrokeStyle("#ffffff");
+                context.setStrokeStyle("#7587db");
                 context.setLineWidth(1);
-                context.setFillStyle('#88cdf1');
-                context.moveTo(item.x + 3.5, item.y);
-                context.arc(item.x, item.y, 3, 0, 2 * Math.PI, false);
+                context.setFillStyle('#ffffff');
+                context.moveTo(item.x + 1.5, item.y);
+                context.arc(item.x, item.y, 1.5, 0, 2 * Math.PI, false);
             }
         }
     });
@@ -1144,7 +1175,6 @@ function drawAreaDataPoints(series, opts, config, context) {
     if (opts.tooltip && opts.tooltip.textList && opts.tooltip.textList.length && process === 1) {
         drawToolTipSplitLine(opts.tooltip.offset.x, opts, config, context);
     }
-
     series.forEach(function (eachSeries, seriesIndex) {
         var data = eachSeries.data;
         var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
@@ -1155,9 +1185,9 @@ function drawAreaDataPoints(series, opts, config, context) {
         splitPointList.forEach(function (points) {
             // 绘制区域数据
             context.beginPath();
-            context.setStrokeStyle(eachSeries.stroke);
+            context.setStrokeStyle(eachSeries.color);
             context.setFillStyle(eachSeries.color);
-            context.setGlobalAlpha(0.6); // 区块的透明度
+            context.setGlobalAlpha(0.5); // 区块的透明度
             context.setLineWidth(1);
             if (points.length > 1) {
                 var firstPoint = points[0];
@@ -1169,6 +1199,7 @@ function drawAreaDataPoints(series, opts, config, context) {
                         if (index > 0) {
                             var ctrlPoint = createCurveControlPoints(points, index - 1);
                             context.bezierCurveTo(ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y, item.x, item.y);
+                            // console.log('bezierCurveTo', index, ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y, item.x, item.y)
                         }
                     });
                 } else {
@@ -1194,6 +1225,49 @@ function drawAreaDataPoints(series, opts, config, context) {
             context.stroke();
             context.fill();
             context.setGlobalAlpha(1);
+
+            // 绘制区域数据
+            context.beginPath();
+            context.setStrokeStyle('#7587db');
+            // context.setFillStyle(eachSeries.color);
+            // context.setGlobalAlpha(0.6); // 区块的透明度
+            context.setLineWidth(1);
+            if (points.length > 1) {
+                var firstPoint = points[0];
+                var lastPoint = points[points.length - 1];
+
+                context.moveTo(firstPoint.x, firstPoint.y);
+                if (opts.extra.lineStyle === 'curve') {
+                    points.forEach(function (item, index) {
+                        if (index > 0) {
+                            var ctrlPoint = createCurveControlPoints(points, index - 1);
+                            context.bezierCurveTo(ctrlPoint.ctrA.x, ctrlPoint.ctrA.y, ctrlPoint.ctrB.x, ctrlPoint.ctrB.y, item.x, item.y);
+                        }
+                    });
+                } else {
+                    points.forEach(function (item, index) {
+                        if (index > 0) {
+                            context.lineTo(item.x, item.y);
+                        }
+                    });
+                }
+
+                // context.lineTo(lastPoint.x, endY);
+                // context.lineTo(firstPoint.x, endY);
+                // context.lineTo(firstPoint.x, firstPoint.y);
+            } else {
+                var item = points[0];
+                context.moveTo(item.x - eachSpacing / 2, item.y);
+                context.lineTo(item.x + eachSpacing / 2, item.y);
+                // context.lineTo(item.x + eachSpacing / 2, endY);
+                // context.lineTo(item.x - eachSpacing / 2, endY);
+                context.moveTo(item.x - eachSpacing / 2, item.y);
+            }
+            // context.closePath();
+            context.stroke();
+            // context.fill();
+
+            
         });
 
         if (opts.dataPointShape !== false) {
@@ -1214,7 +1288,7 @@ function drawAreaDataPoints(series, opts, config, context) {
         drawToolTip(opts.tooltip.textList, opts.tooltip.offset, opts, config, context);
     }
 
-    if (opts.dataKeyLabel !== false && process === 1) { // 画序号标注
+    if (opts.dataKeyLabel !== false && process === 1) { // 画字母序号标注
         series.forEach(function (eachSeries, seriesIndex) {
             var data = eachSeries.data;
             var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
@@ -1736,6 +1810,81 @@ function drawRadarDataPoints(series, opts, config, context) {
     };
 }
 
+/**
+ * 绘制离散点图表
+ */
+function drawDotDataPoints(series, opts, config, context) {
+    var process = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
+
+    var _calYAxisData2 = calYAxisData(series, opts, config),
+        ranges = _calYAxisData2.ranges;
+    var _getXAxisPoints2 = getXAxisPoints(opts.categories, opts, config),
+        xAxisPoints = _getXAxisPoints2.xAxisPoints,
+        eachSpacing = _getXAxisPoints2.eachSpacing;
+
+    var minRange = ranges.pop();
+    var maxRange = ranges.shift();
+    var endY = opts.height - config.padding - config.xAxisHeight - config.legendHeight;
+    var calPoints = [];
+
+    if (opts.tooltip && opts.tooltip.textList && opts.tooltip.textList.length && process === 1) {
+        drawToolTipSplitLine(opts.tooltip.offset.x, opts, config, context);
+    }
+    series.forEach(function (eachSeries, seriesIndex) {
+        var data = eachSeries.data;
+        var points = getDataPoints(data, minRange, maxRange, xAxisPoints, eachSpacing, opts, config, process);
+        calPoints.push(points);
+
+        var splitPointList = splitPoints(points);
+
+        // 绘制关联列表序号的标注，自定义的
+        var rank = eachSeries.rank;
+        var color = eachSeries.rankColor;
+
+        context.beginPath();
+        context.setFontSize(config.fontSize);
+        points.forEach(function (item, index) {
+            if (item !== null) {
+                var formatVal = eachSeries.format ? eachSeries.format(rank[index]) : rank[index];
+                // 绘制图形
+                if (color[index] !== '') {
+                    // 绘制底部背景颜色矩形
+                    context.setFillStyle(color[index])
+                    context.fillRect(item.x - measureText(formatVal) * 4 / 4, item.y - measureText(formatVal) * 8 / 4, measureText(formatVal) * 8 / 4, measureText(formatVal) * 6 / 4)
+                }
+                // 绘制字母序号，如A、B、C
+                context.setFillStyle('#ffffff');
+                context.fillText(formatVal, item.x - measureText(formatVal) / 2, item.y - measureText(formatVal) * 3 / 4);
+            }
+        });
+
+        // 绘制圆标点
+        context.beginPath();
+        context.setFontSize(config.fontSize);
+        points.forEach(function (item, index) {
+            if (item !== null) {
+                if (eachSeries.data[index] !== 0) {
+                    // 设置圆标点参数
+                    context.setStrokeStyle("#7587db");
+                    context.setLineWidth(1);
+                    context.setFillStyle('#ffffff');
+                    context.moveTo(item.x + 2, item.y);
+                    context.arc(item.x, item.y, 2, 0, 2 * Math.PI, false);
+                }
+            }
+        });
+        context.closePath();
+        context.fill();
+        context.stroke();
+
+    });
+
+    return {
+        xAxisPoints: xAxisPoints,
+        calPoints: calPoints
+    };
+}
+
 function drawCanvas(opts, context) {
     context.draw();
 }
@@ -1931,6 +2080,28 @@ function drawCharts(type, opts, config, context) {
                 onProcess: function onProcess(process) {
                     _this.chartData.radarData = drawRadarDataPoints(series, opts, config, context, process);
                     drawLegend(opts.series, opts, config, context);
+                    drawCanvas(opts, context);
+                },
+                onAnimationFinish: function onAnimationFinish() {
+                    _this.event.trigger('renderComplete');
+                }
+            });
+            break;
+        case 'dot':
+            this.animationInstance = new Animation({
+                timing: 'easeIn',
+                duration: duration,
+                onProcess: function onProcess(process) {
+                    drawYAxis(series, opts, config, context);
+                    drawXAxis(categories, opts, config, context);
+                    drawLegend(opts.series, opts, config, context);
+
+                    var _drawAreaDataPoints = drawDotDataPoints(series, opts, config, context, process),
+                        xAxisPoints = _drawAreaDataPoints.xAxisPoints,
+                        calPoints = _drawAreaDataPoints.calPoints;
+
+                    _this.chartData.xAxisPoints = xAxisPoints;
+                    _this.chartData.calPoints = calPoints;
                     drawCanvas(opts, context);
                 },
                 onAnimationFinish: function onAnimationFinish() {

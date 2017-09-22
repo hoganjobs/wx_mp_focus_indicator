@@ -15,8 +15,8 @@ Page({
     currentItem: null, // 定义当前选中项
     scrollHeight: 375, // 
     stream_id: '', //定义stream_id用于判断websocket中added消息
-    rank: [],
-    rankColor: ['#f28d3d', '#6b489c', '#e15b74', '#58b8ad', '#7573b4', '#88cdf1', '#FF6666', '#FF9900', '#99CC33', '#33CC99'], // 设置标注的可选颜色
+    rank: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+    rankColorDefault: {A:'#f28d3d', B:'#6b489c', C:'#e15b74', D:'#58b8ad', E:'#7573b4', F:'#88cdf1', G:'#FF6666', H:'#FF9900', I:'#99CC33', J:'#33CC99'}, // 设置标注的可选颜色
     keywordRuleVal: {},
     // analysisData: [{
     //   id: 0,
@@ -129,8 +129,10 @@ Page({
   analysisDetailTap: function (event) {
     console.log('analysisDetailTap', event)
     let label = event.currentTarget.dataset.label
+    let key = event.currentTarget.dataset.key
     label = JSON.stringify(label)
-    let url = '../../pages/analysisDetail/analysisDetail?label=' + label
+    key = JSON.stringify(key)
+    let url = '../../pages/analysisDetail/analysisDetail?label=' + label + '&key=' + key
     wx.navigateTo({
       url: url,
       success: function() {
@@ -334,8 +336,8 @@ Page({
       data: seriesAll,
       rank: rank,
       rankColor: rankColors,
-      color: '#b5d9f1',
-      stroke: '#88cdf1',
+      color: '#ecf3ff',
+      stroke: '#93bcfd',
       pointColor: '#4aabef'
     }]
     // 更新图表数据，显示全部图表
@@ -355,14 +357,16 @@ Page({
   wxCharts: function(data) {
     var windowWidth = 320; //定义初始化图表宽度
     let categories = data.category
-    // let categories = ["2017-06-28", "2017-06-29", "2017-06-30", "2017-07-01", "2017-07-02", "2017-07-03", "2017-07-04", "2017-07-05", "2017-07-06", "2017-07-07", "2017-07-08", "2017-07-09", "2017-07-10", "2017-07-11", "2017-07-12", "2017-07-13", "2017-07-14", "2017-07-15", "2017-07-16", "2017-07-17", "2017-07-18", "2017-07-19", "2017-07-20", "2017-07-21", "2017-07-22", "2017-07-23", "2017-07-24", "2017-07-25", "2017-07-26", "2017-07-27"]
     let labelIndex = data.label_index
     let seriesAll = data.series.ALL
-    // let seriesAll = [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 14, 1, 0, 4, 0, 2, 6]
     let markPoint = data.mark_point
+    // let categories = ["2017-06-28", "2017-06-29", "2017-06-30", "2017-07-01", "2017-07-02", "2017-07-03", "2017-07-04", "2017-07-05", "2017-07-06", "2017-07-07", "2017-07-08", "2017-07-09", "2017-07-10", "2017-07-11", "2017-07-12", "2017-07-13", "2017-07-14", "2017-07-15", "2017-07-16", "2017-07-17", "2017-07-18", "2017-07-19", "2017-07-20", "2017-07-21", "2017-07-22", "2017-07-23", "2017-07-24", "2017-07-25", "2017-07-26", "2017-07-27"]
+    // let seriesAll = [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 14, 1, 0, 4, 0, 2, 6]
+    // let labelIndex = ["2017-07-09", "2017-07-11", "2017-07-16", "2017-07-21", "2017-07-27"]
+    // let markPoint = {A:["2017-07-09", 60],B:["2017-07-11", 130],C:["2017-07-16", 66],D:["2017-07-21", 970]}
     let maxVal = this.arrayMax(seriesAll) // 排序找出最大值
     let rank = []
-    let rankColorDefault = this.data.rankColor
+    let rankColorDefault = this.data.rankColorDefault
     let rankColors = []
     let j = 0 // 定义保存rankColor颜色的索引号
     // 对应标注点
@@ -370,7 +374,7 @@ Page({
       for (let key in markPoint) {
         if (categories[i] == markPoint[key][0]) {
           rank.push(key)
-          rankColors.push(rankColorDefault[j])
+          rankColors.push(rankColorDefault[key])
           j++;
         }
       }
@@ -382,10 +386,12 @@ Page({
     // 截取月日
     for (let i = 0; i < categories.length; i++) {
       categories[i] = categories[i].slice(5, 10)
+      categories[i] = categories[i].replace('-', '.')
     }
     // 截取月日
     for (let i = 0; i < labelIndex.length; i++) {
       labelIndex[i] = labelIndex[i].slice(5, 10)
+      labelIndex[i] = labelIndex[i].replace('-', '.')
     }
     // 获取设备屏幕宽度，并设置图表宽度
     try {
@@ -400,7 +406,7 @@ Page({
       console.error('getSystemInfoSync failed!');
     }
     lineChart = new wxCharts({
-      canvasId: 'areaCanvas', //required 微信小程序canvas-id
+      canvasId: 'analysisCanvas', //required 微信小程序canvas-id
       type: 'area', //required 图表类型，可选值为pie, line, column, area, ring, radar
       categories: categories, //required (饼图、圆环图不需要) 数据类别分类
       labelIndex: labelIndex, // 绘制的对应的刻度(自定义)
@@ -427,8 +433,8 @@ Page({
         data: seriesAll,
         rank: rank,
         rankColor: rankColors,
-        color: '#b5d9f1',
-        stroke: '#88cdf1',
+        color: '#d6dbf4',
+        stroke: '#d6dbf4',
         pointColor: '#4aabef'
       }],
       // series: [],
@@ -443,7 +449,7 @@ Page({
           return val.toFixed(0);
         },
         // min: 0, //Y轴起始值
-        max: maxVal + 2, //Y轴终止值
+        // max: maxVal, //Y轴终止值
         // title: '文章数 (篇)', //Y轴title
         // gridColor: '#e2e2e2', //default #cccccc Y轴网格颜色
         // fontColor: '#333333', //default #666666 Y轴数据点颜色
