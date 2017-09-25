@@ -8,7 +8,7 @@
     </view>
     <view class="pz_search_form">
       <input class="pz_search_input" type="text" placeholder="请输入关键词" placeholder-style="color: #c7c7cd" value="{{inputValue}}" confirm-type="search" bindinput="inputTyping"/>
-      <button class="pz_search_btn" bindtap="startSearchTap">
+      <button class="pz_search_btn" hover-class="pz_search_btn_hover" bindtap="startSearchTap">
         <icon class="pz_search_btn_ico" type="search" size="28" color="#ffffff"/>
       </button>
     </view>

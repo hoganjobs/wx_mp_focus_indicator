@@ -85,7 +85,7 @@ App({
     webSocketOpen: false, //websocket是否连接的标志
     hostname: 'star.ibiliang.com',
     // hostname: 'wxapp.ibiliang.com',
-    version: '0.17.0920', //websockt服务服务端匹配的版本
+    version: '0.17.0922', //websockt服务服务端匹配的版本
     wsUrl: false, //用于保存服务端分配的websocket访问路径
     keywordVal: '', // 查询的关键词
     keywordRuleVal: '', // 用于保存服务端返回keyword_rule的值

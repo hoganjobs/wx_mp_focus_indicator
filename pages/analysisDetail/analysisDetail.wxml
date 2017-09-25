@@ -1,10 +1,10 @@
 <!--pages/analysisDetail/analysisDetail.wxml-->
 <view class="container">
 	<!-- canvas图表区域 -->
-	<view class="pz_canvas" style="width:{{windowWidth}}px;transform: rotate({{chartsDeg}}deg);" wx:if="{{analysisData.length > 0 && canvasShowed ? true : false}}">
+	<view class="pz_canvas" style="width:{{windowWidth}}px;transform: rotate({{chartsDeg}}deg);" wx:if="{{analysisData.group_list.length > 0 && canvasShowed ? true : false}}">
 		<canvas canvas-id="analysisDetailCanvas" disable-scroll="true" class="canvas" style="width:{{windowWidth}}px" bindtouchstart=""></canvas>
 	</view>
-	<view class="pz_analysis_listr_loading" hidden="{{analysisData.length > 0}}">
+	<view class="pz_analysis_listr_loading" hidden="{{analysisData.group_list.length > 0}}">
 		<view class="sk-circle">
 		  <view class="sk-circle1 sk-child"></view>
 		  <view class="sk-circle2 sk-child"></view>
@@ -24,14 +24,76 @@
 		</view>
 	</view>
 	<!-- 详情列表区域 -->
-	<view class="pz_analysis_list_area" wx:if="{{analysisData.length > 0}}">
-		<view class="pz_analysis_list_head" >
-			<image style="width: 30px; height: 30px;" mode="{{item.mode}}" src="../../image/icon_viewpoint.svg"></image>
-			<view class="pz_analysis_list_head_title">媒体观点</view>
-			<view class="pz_analysis_list_head_count" wx:if="{{titleSignCount > 0}}">（{{titleSignCount}}条）</view>
-		</view>
+	<view class="pz_analysis_list_area" wx:if="{{analysisData.group_list.length > 0}}">
 		<scroll-view scroll-y style="height:{{scrollHeight}}px;" bindscrolltoupper="" bindscrolltolower="" bindscroll="" scroll-into-view="{{inToView}}" scroll-top="">
+			<view class="pz_analysis_list_head" >
+				<image style="width: 30px; height: 30px;" mode="{{item.mode}}" src="../../image/icon_viewpoint.svg"></image>
+				<view class="pz_analysis_list_head_title">{{analysisData.display_title}}</view>
+<!-- 				<view class="pz_analysis_list_head_count" wx:if="{{titleSignCount > 0}}">（{{titleSignCount}}条）</view> -->
+			</view>
+<!-- 			<view class="pz_analysis_list_des" >
+				<view class="pz_analysis_list_des_content">{{analysisData.description}}</view>
+			</view> -->
 			<view class="pz_analysis_list_wrap">
+				<view class="pz_analysis_listr">
+				  <view wx:for="{{analysisData.group_list}}" wx:key="analysisDataId" wx:for-item="analysisData">
+				    <view class="pz_analysis_list_item">
+				      <view class="pz_analysis_list_publish_date" id="{{'inToView'+analysisData.date}}" data-id="{{analysisData.date}}" bindtap="loadMoreTap">
+				        <text class="pz_analysis_list_publish_date_text">{{analysisData.date}}</text>
+				        <text class="pz_analysis_list_publish_date_text" wx:if="{{analysisData.list.length > 1}}">（{{analysisData.list.length}}条）</text>
+				      </view>
+				      <view class="pz_analysis_list_item_title">
+				      	<view class="pz_analysis_list_mark" wx:if="{{analysisData.key.length > 0}}" style="background-color:{{rankColorDefault[analysisData.key]}};">{{analysisData.key}}</view>
+				      	<view class="pz_analysis_list_item_title_text">{{analysisData.title}}</view>
+				      </view>
+				     <!--  hidden="{{currentItem[analysisData.date]== analysisData.date? false : true}}" animation="{{currentItem[analysisData.date]== analysisData.date?unfoldAnimationData[analysisData.date] : ''}}" -->
+				      <view class="pz_analysis_list" id="item{{analysisData.date}}" animation="{{currentItem==analysisData.date?unfoldAnimationData:''}}" data-animation="{{currentItem == analysisData.date ? 'unfoldAnimationData' : ''}}">
+				      	<view class="pz_analysis_list_content" id="cnt{{analysisData.date}}">
+						      <view wx:for="{{analysisData.list}}" wx:key="analysisId" wx:for-item="analysisItem">
+						        <view class="pz_analysis_list_card" hover-class="pz_analysis_list_hover" style="background-color:{{resultArticleListBgcStyle}};" data-article="{{analysisItem}}" bindtap="">
+						          <view class="pz_analysis_list_top">
+						            <view class="pz_analysis_list_left">
+						              <view class="pz_analysis_list_content">
+						                <view class="pz_analysis_list_text">
+						                  {{analysisItem.title}}
+						                </view>
+						              </view>
+						              <view class="pz_analysis_list_media">
+						                <view class="pz_analysis_list_point" wx:if="{{analysisItem.is_sensitive}}">敏感观点</view>
+						              </view>
+						            </view>
+						            <view class="pz_analysis_list_right">
+						            </view>
+						          </view>
+						          <view class="pz_analysis_list_bottom">
+						            <view class="pz_analysis_list_left">
+						              <view class="pz_analysis_list_media">
+						                <view class="pz_analysis_list_media_name">{{analysisItem.media_name_sign}}</view>
+						                <view class="pz_analysis_list_date">{{analysisItem.publish_at}}</view>
+						              </view>
+						            </view>
+						            <view class="pz_analysis_list_right" wx:if="{{analysisItem.media_wind > 0}}">
+						              <view class="pz_analysis_list_wind_grading">
+						                <view class="pz_analysis_list_wind_top">
+						                  <view class="pz_analysis_list_wind_text">最大风力</view>
+						                </view>
+						                <view class="pz_analysis_list_wind_bottom">
+						                  <view class="pz_analysis_list_wind_level_num">{{analysisItem.media_wind}}</view>
+						                  <view class="pz_analysis_list_wind_level">级</view>
+						                </view>
+						              </view>
+						            </view>
+						          </view>
+						        </view>
+				      	</view>
+					      </view>
+				      </view>
+				    </view>
+				  </view>
+				</view>
+			</view>
+
+<!-- 			<view class="pz_analysis_list_wrap">
 				<view class="pz_analysis_listr">
 				  <view wx:for="{{analysisData}}" wx:key="analysisDataId" wx:for-item="analysisData">
 				    <view class="pz_analysis_list_item">
@@ -80,7 +142,8 @@
 				    </view>
 				  </view>
 				</view>
-			</view>
+			</view> -->
+
 <!-- 			<view class="pz_analysis_list_wrap">
 				<view wx:for="{{analysisData}}" wx:key="analysisDataId" wx:for-item="analysisData">
 				  <view class="pz_analysis_data_item">

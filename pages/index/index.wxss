@@ -70,6 +70,9 @@ page {
   right: 0;
   top: 0;
 }
+.pz_search_btn_hover {
+  /*background-color: #0E6BBA;*/
+}
 button::after {
   border: #fff
 }

@@ -10,13 +10,14 @@ Page({
    */
   data: {
     canvasShowed: true,
-    currentItem: {},
+    currentItem: null,
     label: '',
     key: '', // 保存上一页的字母序号标注
     rank: [],
     // rankColor: ['#f28d3d', '#6b489c', '#e15b74', '#58b8ad', '#7573b4', '#88cdf1', '#FF6666', '#FF9900', '#99CC33', '#33CC99'], // 设置标注的可选颜色
     rankColorDefault: {A:'#f28d3d', B:'#6b489c', C:'#e15b74', D:'#58b8ad', E:'#7573b4', F:'#88cdf1', G:'#FF6666', H:'#FF9900', I:'#99CC33', J:'#33CC99'}, // 设置标注的可选颜色
     titleSignCount: 0,
+    unfoldAnimationData: {}
   },
 
   /**
@@ -28,17 +29,53 @@ Page({
     console.log(event)
     let id = event.currentTarget.dataset.id
     let currentItem = this.data.currentItem
-    if (currentItem[id] == id) {
-      currentItem[id] = -1;
-      this.setData({
-        currentItem: currentItem
-      })
-    } else {
-      currentItem[id] = id;
-      this.setData({
+    let itemId = '#item' + id
+    let cntId = '#cnt' + id
+    let itemHeight = null
+    let cntHeight = null
+
+    // 创建动画实例
+    var animation = wx.createAnimation({
+      duration: 600,
+      timingFuction: 'ease'
+    })
+    // 当前的标志状态，没有更改的
+    if (currentItem !== id) {
+      currentItem = id;
+      self.setData({
         currentItem: currentItem
       })
     }
+    // 获取节点的相关信息，需要获取的字段在fields中指定。
+    wx.createSelectorQuery().select(itemId).fields({
+      size: true // 返回节点尺寸（width height）
+    }, function(res){
+      itemHeight = res.height; // 节点的高度
+      console.log('itemHeight', itemHeight)
+
+      // 获取节点的相关信息，需要获取的字段在fields中指定。
+      wx.createSelectorQuery().select(cntId).fields({
+        size: true // 返回节点尺寸（width height）
+      }, function(res){
+        cntHeight = res.height; // 节点的高度
+        console.log('cntHeight', cntHeight)
+        if (itemHeight !== 0) {
+          self.animation = animation
+          // hide，设置高度为0，实现折叠隐藏
+          self.animation.height(0).step({timingFunction: 'ease-out'})
+          self.setData({
+            unfoldAnimationData: animation.export()
+          })
+        } else {
+          self.animation = animation
+          // show，设置到指定的高度，实现展开显示
+          self.animation.height(cntHeight).step({ duration: cntHeight*3, timingFunction: 'ease'})
+          self.setData({
+            unfoldAnimationData: animation.export()
+          })
+        }
+      }).exec()
+    }).exec()
   },
 
   /**
@@ -89,109 +126,6 @@ Page({
     }
     return max;
   },
-
-  /**
-   * wxCharts图表绘制函数
-   * updateData(data) 更新图表数据，data: object，data.categories(可选，具体见参数说明)，data.series(可选，具体见参数说明)，data.title(可选，具体见参数说明)，data.subtitle(可选，具体见参数说明)
-   * stopAnimation() 停止当前正在进行的动画效果，直接展示渲染的最终结果
-   * addEventListener(type, listener) 添加事件监听，type: String事件类型，listener: function 处理方法
-   * getCurrentDataIndex(e) 获取图表中点击时的数据序列编号(-1表示未找到对应的数据区域), e: Object微信小程序标准事件，需要手动的去绑定touch事件
-   * showToolTip(e, options?) 图表中展示数据详细内容(目前仅支持line和area图表类型)，e: Object微信小程序标准事件，options: Object可选，tooltip的自定义配置，支持option.background，默认为#000000; option.format, function类型，接受两个传入的参数，seriesItem(Object, 包括seriesItem.name以及seriesItem.data)和category，可自定义tooltip显示内容。
-   */
-  // wxCharts: function(data) {
-  //   var windowWidth = 320; //定义初始化图表宽度
-  //   let categories = data.category
-  //   let labelIndex = data.label_index
-  //   let seriesAll = data.series.ALL
-  //   let markPoint = data.mark_point
-  //   // let categories = ["2017-08-27", "2017-08-28", "2017-08-29", "2017-08-30", "2017-08-31", "2017-09-01", "2017-09-02", "2017-09-03", "2017-09-04", "2017-09-05", "2017-09-06", "2017-09-07", "2017-09-08", "2017-09-09", "2017-09-10", "2017-09-11", "2017-09-12", "2017-09-13", "2017-09-14"]
-  //   // let labelIndex = ["2017-08-27", "2017-09-01", "2017-09-06", "2017-09-11", "2017-09-14"]
-  //   // let seriesAll = [3, 12, 1, 1, 0, 0, 2, 0, 12, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-  //   // // let markPoint = {A:["2017-08-09", 60],B:["2017-07-11", 130],C:["2017-07-16", 66],D:["2017-07-21", 970],E:["2017-08-04", 123]}
-  //   // let markPoint = {}
-  //   let maxVal = this.arrayMax(seriesAll) // 排序找出最大值
-  //   let rank = []
-  //   let rankColorDefault = this.data.rankColorDefault
-  //   let rankColors = []
-  //   let j = 0 // 定义保存rankColor颜色的索引号
-  //   // 对应标注点
-  //   for (let i = 0; i < categories.length; i++) {
-  //     for (let key in markPoint) {
-  //       if (categories[i] == markPoint[key][0]) {
-  //         rank.push(key)
-  //         rankColors.push(rankColorDefault[key])
-  //         j++;
-  //       }
-  //     }
-  //     if (rank[i] == undefined) {
-  //       rank.push('')
-  //       rankColors.push('')
-  //     }
-  //   }
-  //   // 截取月日
-  //   for (let i = 0; i < categories.length; i++) {
-  //     categories[i] = categories[i].slice(5, 10)
-  //   }
-  //   // 截取月日
-  //   for (let i = 0; i < labelIndex.length; i++) {
-  //     labelIndex[i] = labelIndex[i].slice(5, 10)
-  //   }
-  //   // 获取设备屏幕宽度，并设置图表宽度
-  //   try {
-  //      var res = wx.getSystemInfoSync();
-  //     windowWidth = res.windowWidth;
-  //     console.log('windowWidth:', windowWidth)
-  //     // 更新页面图表宽度
-  //     this.setData({
-  //       windowWidth: windowWidth
-  //     })
-  //   } catch (options) {
-  //     console.error('getSystemInfoSync failed!');
-  //   }
-  //   areaChart = new wxCharts({
-  //     canvasId: 'analysisDetailCanvas', //required 微信小程序canvas-id
-  //     type: 'area', //required 图表类型，可选值为pie, line, column, area, ring, radar
-  //     categories: categories, //required (饼图、圆环图不需要) 数据类别分类
-  //     labelIndex: labelIndex, // 绘制的对应的刻度(自定义)
-  //     animation: true, //Boolean类型 default true 是否动画展示
-  //     legend: false, //default true 是否显示图表下方各类别的标识
-  //     background: '#f5f5f5',
-  //     series: [{
-  //       name: 'All',
-  //       data: seriesAll,
-  //       rank: rank,
-  //       rankColor: rankColors,
-  //       color: '#d6dbf4',
-  //       stroke: '#d6dbf4',
-  //       pointColor: '#4aabef'
-  //     }],
-  //     xAxis: {
-  //       gridColor: '#7cb5ec', //default #cccccc X轴网格颜色
-  //       fontColor: '#999999', //default #666666 X轴数据点颜色
-  //       disableGrid: false, //default false 不绘制X轴网格
-  //       type: 'calibration' //可选值calibration(刻度) 默认为包含样式
-  //     },
-  //     yAxis: { //Y轴配置
-  //       format: function(val) { //自定义Y轴文案显示
-  //         return val.toFixed(0);
-  //       },
-  //       min: 0, //Y轴起始值
-  //       // max: maxVal + 2, //Y轴终止值
-  //       // title: '文章数 (篇)', //Y轴title
-  //       // gridColor: '#e2e2e2', //default #cccccc Y轴网格颜色
-  //       // fontColor: '#333333', //default #666666 Y轴数据点颜色
-  //       // titleFontColor: '#333333', //default #333333 Y轴title颜色
-  //       disabled: true //不绘制Y轴
-  //     },
-  //     width: windowWidth, //required canvas宽度，单位为px
-  //     height: 200, //required canvas高度，单位为px
-  //     dataLabel: false, //default true 是否在图表中显示数据内容值
-  //     dataPointShape: false, //default true 是否在图表中显示数据点图形标识
-  //     extra: {
-  //       lineStyle: 'curve', //(仅对line, area图表有效) 可选值：curve曲线，straight直线 (default)
-  //     }
-  //   });
-  // },
 
   /**
    * wxCharts图表绘制函数
@@ -407,7 +341,7 @@ Page({
           canvasHeight = 0;
           canvasShowed = false;
         }
-        let scrollHeight = windowHeight - canvasHeight - 40 // 减去canvas图表高度和标题栏高度
+        let scrollHeight = windowHeight - canvasHeight // 减去canvas图表高度
         // 设置scroll-view的高度
         this.setData({
           canvasShowed: canvasShowed,
@@ -421,42 +355,44 @@ Page({
       }
       // 判断data_type是否实际数据
       else if (data_type == 'fi_label_detail_added_list') {
-        let listData = data.data.list
-        // json数组数据分类分组处理
-        let map = {} //定义一个对象用于存储不同项分类
-        let dest = [] //定义一个数组用于存储分类分组后的数组
-        // 遍历json数组中每一个对象数据
-        for (let i = 0; i < listData.length; i++) {
-          let art_i = listData[i];
-          // 将发布时间中带00:00:00的过滤，只显示到年月日
-          // art_i.publish_at = art_i.publish_at.replace('00:00:00', '')
-          // 判断是否为新的分类
-          if (!map[art_i.publish_at]) {
-            // 存入新的一类数据
-            dest.push({
-              publish_at: art_i.publish_at,
-              data: [art_i]
-            });
-            // 把新的不同分类判断的存入map
-            map[art_i.publish_at] = art_i;
-          } else {
-            // 将相同的存入对应一组分类中
-            for (let j = 0; j < dest.length; j++) {
-              let dj = dest[j];
-              if (dj.publish_at == art_i.publish_at) {
-                dj.data.push(art_i);
-                break;
-              }
-            }
-          }
-        }
-        // 更新页面媒体观点总条数、列表数据、scroll列表区域高度等
+        let listData = data.data
+        // // json数组数据分类分组处理
+        // let map = {} //定义一个对象用于存储不同项分类
+        // let dest = [] //定义一个数组用于存储分类分组后的数组
+        // // 遍历json数组中每一个对象数据
+        // for (let i = 0; i < listData.length; i++) {
+        //   let art_i = listData[i];
+        //   // 将发布时间中带00:00:00的过滤，只显示到年月日
+        //   // art_i.publish_at = art_i.publish_at.replace('00:00:00', '')
+        //   // 判断是否为新的分类
+        //   if (!map[art_i.publish_at]) {
+        //     // 存入新的一类数据
+        //     dest.push({
+        //       publish_at: art_i.publish_at,
+        //       data: [art_i]
+        //     });
+        //     // 把新的不同分类判断的存入map
+        //     map[art_i.publish_at] = art_i;
+        //   } else {
+        //     // 将相同的存入对应一组分类中
+        //     for (let j = 0; j < dest.length; j++) {
+        //       let dj = dest[j];
+        //       if (dj.publish_at == art_i.publish_at) {
+        //         dj.data.push(art_i);
+        //         break;
+        //       }
+        //     }
+        //   }
+        // }
+        // console.log('dest', dest)
+        console.log('listData:', listData)
+        // 更新页面列表数据
         this.setData({
-          titleSignCount: listData.length,
-          analysisData: dest
+          // titleSignCount: listData.length,
+          analysisData: listData
         })
         // scroll-into-view锚点到指定位置
-        this.inToView(dest) 
+        // this.inToView(dest) 
       }
     // }
   },

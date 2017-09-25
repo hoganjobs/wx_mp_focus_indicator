@@ -34,11 +34,11 @@
 	</view>
 	<!-- 详情列表区域 -->
 	<view class="pz_analysis_list_wrap" wx:if="{{analysisData.length > 0}}">
-		<view class="pz_analysis_list_head" >
-			<!-- <view class="pz_analysis_list_head_right" hover-class="pz_analysis_list_head_right_hover" bindtap="showAllTap">显示全部</view> -->
-			<view class="pz_analysis_list_head_title">焦点头条</view>
-		</view>
 		<scroll-view scroll-y style="height:{{scrollHeight}}px;" bindscrolltoupper="" bindscrolltolower="" bindscroll="" scroll-into-view="" scroll-top="">
+			<view class="pz_analysis_list_head" >
+				<!-- <view class="pz_analysis_list_head_right" hover-class="pz_analysis_list_head_right_hover" bindtap="showAllTap">显示全部</view> -->
+				<view class="pz_analysis_list_head_title">焦点头条</view>
+			</view>
 		  <view wx:for="{{analysisData}}" wx:key="analysisId" wx:for-index="idx" wx:for-item="analysisItem">
 		  	<view class="pz_analysis_list" hover-class="pz_analysis_list_hover" data-id="{{analysisItem.id}}" data-label="{{analysisItem.label}}" data-key="{{analysisItem.key}}" bindtap="analysisDetailTap">
 		  		<view class="pz_analysis_list_left" style="background-color:{{rankColorDefault[analysisItem.key]}};">
