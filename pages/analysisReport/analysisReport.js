@@ -669,12 +669,12 @@ Page({
       }
       // 判断data_type是否实际数据
       else if (data_type == 'fi_report_added_list') {
-        let listData = data.data.list
+        let analysisData = data.data
         // 设置可滚动视图区域高度
         let windowHeight = app.globalData.systemInfo.windowHeight
-        let scrollHeight = windowHeight - 210 - 30 // 减去canvas图表高度和列表wrap的padding
+        let scrollHeight = windowHeight - 210 - 5 // 减去canvas图表高度
         this.setData({
-          analysisData: listData,
+          analysisData: analysisData,
           scrollHeight: scrollHeight
         })
       }
@@ -689,10 +689,43 @@ Page({
   },
 
   /**
+   * 修改会员积分
+   */
+  addMembershipScore: function (data) {
+    console.log('analysisReport addMembershipScore')
+    let member_url = app.globalData.memberUrl // 修改会员积分的接口地址
+    let app_id = app.globalData.appId // 公众号的appID
+    let open_id = app.globalData.openid // 用户openID
+    let card_id = app.globalData.cardId // 卡券ID
+    let member_code = app.globalData.memberCode // 会员卡号
+    wx.request({
+      url: member_url, // 接口地址
+      method: 'PUT',
+      data: {
+        "app_id": app_id, // 公众号appid
+        "card_id": card_id, // 卡券id
+        "code": member_code, // 会员卡号
+        "type": "mini_program_click", // 积分变动类型
+        "record_bonus": 'analysisReportPage' // 选填，积分变动说明，不超过14个汉字
+      },
+      success: function(res) {
+        console.log('修改会员卡积分成功！')
+        console.log('res.data', res.data)
+      },
+      fail: function (error) {
+        console.log('修改会员卡积分失败！')
+        console.log('member_url error', error)
+      }
+    })
+  },
+
+  /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
     console.log('analysisReport onLoad')
+    // 修改会员积分
+    // this.addMembershipScore()
     // 测试用代码
     /*---- test start ----*/
     // console.log('analysisReport options:', options)

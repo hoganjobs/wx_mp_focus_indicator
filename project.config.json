@@ -1,0 +1,53 @@
+{
+	"description": "项目配置文件。",
+	"setting": {
+		"urlCheck": true,
+		"es6": true,
+		"postcss": true,
+		"minified": true
+	},
+	"compileType": "weapp",
+	"libVersion": "1.5.2",
+	"appid": "wx9ea0feeb75ed925f",
+	"projectname": "WeBiliang",
+	"condition": {
+		"weapp": {
+			"current": -1,
+			"list": [
+				{
+					"id": -1,
+					"name": "index",
+					"pathName": "pages/index/index",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "result 1007: 单人聊天会话中的小程序消息卡片",
+					"pathName": "pages/result/result",
+					"query": "",
+					"scene": "1007"
+				},
+				{
+					"id": -1,
+					"name": "analysisReport",
+					"pathName": "pages/analysisReport/analysisReport",
+					"query": "keyword_rule={\"source_keyword\":\"百度\",\"and_keyword\":[],\"not_keyword\":[]}"
+				},
+				{
+					"id": -1,
+					"name": "analysisDetail",
+					"pathName": "pages/analysisDetail/analysisDetail",
+					"query": "keyword_rule={\"source_keyword\":\"百度\",\"and_keyword\":[],\"not_keyword\":[]}"
+				}
+			]
+		},
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		}
+	}
+}

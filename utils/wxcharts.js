@@ -838,8 +838,6 @@ function drawRankLabel(points, series, config, context) {
     var data = series.rank;
     var color = series.rankColor;
 
-    context.beginPath();
-    context.setFontSize(config.fontSize);
     points.forEach(function (item, index) {
         if (item !== null) {
             var formatVal = series.format ? series.format(data[index]) : data[index];
@@ -848,7 +846,7 @@ function drawRankLabel(points, series, config, context) {
                 // 绘制底部背景颜色矩形
                 // context.beginPath();
                 // context.setFontSize(config.fontSize);
-                context.setFillStyle(color[index])
+                // context.setFillStyle(color[index])
                 // // 先找出四个圆倒角，再闭合路径绘制出带圆角矩形
                 // context.arc(item.x - measureText(formatVal) * 3 / 4, item.y - measureText(formatVal) * 7 / 4, measureText(formatVal) * 1 / 4, Math.PI, 1.5 * Math.PI)
                 // context.arc(item.x + measureText(formatVal) * 3 / 4, item.y - measureText(formatVal) * 7 / 4, measureText(formatVal) * 1 / 4, 1.5 * Math.PI, 0)
@@ -856,7 +854,13 @@ function drawRankLabel(points, series, config, context) {
                 // context.arc(item.x - measureText(formatVal) * 3 / 4, item.y - measureText(formatVal) * 3 / 4, measureText(formatVal) * 1 / 4, 0.5 * Math.PI, Math.PI)
                 // context.closePath();
                 // context.fill();
-                context.fillRect(item.x - measureText(formatVal) * 4 / 4, item.y - measureText(formatVal) * 8 / 4, measureText(formatVal) * 8 / 4, measureText(formatVal) * 6 / 4)
+                context.beginPath();
+                context.setFontSize(config.fontSize);
+                context.arc(item.x, item.y - measureText(formatVal) * 5 / 4, measureText(formatVal) * 3 / 4, 0, 2 * Math.PI)
+                context.closePath();
+                context.setFillStyle(color[index])
+                context.fill();
+                // context.fillRect(item.x - measureText(formatVal) * 4 / 4, item.y - measureText(formatVal) * 8 / 4, measureText(formatVal) * 8 / 4, measureText(formatVal) * 6 / 4)
             }
             // 绘制字母序号，如A、B、C
             context.setFillStyle('#ffffff');

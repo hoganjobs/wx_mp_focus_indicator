@@ -64,21 +64,23 @@
               </view>
             </view>
             <view class="pz_checklistr_item">
+              <view class="pz_checklistr_item_box" bindtap="">
+                <view class="pz_checklistr_item_cir" style="{{(productFormScore.weibo > 0 || jsonstreamEnd) ? 'border-color: #FFFFFF;' : ''}};">
+<!--                   <image class="pz_checklistr_item_ico" hidden="{{productFormScore.weibo > 0}}" mode="scaleToFill" src="../../image/{{productFormIco.weibo}}"></image>
+                  <view class="pz_checklistr_score" hidden="{{!productFormScore.weibo > 0}}">{{productFormScore.weibo}}</view> -->
+                  <image class="pz_checklistr_item_ico" hidden="{{(productFormScore.weibo > 0 || jsonstreamEnd)}}" mode="scaleToFill" src="../../image/{{productFormIco.weibo}}"></image>
+                  <view class="pz_checklistr_score" hidden="{{!(productFormScore.weibo > 0 || jsonstreamEnd)}}">{{productFormScore.weibo}}<view class="pz_checklistr_uint" wx:if="{{unitShowed.weibo}}">万</view></view>
+                </view>
+                <view class="pz_checklistr_item_name" style="{{(productFormScore.weibo > 0 || jsonstreamEnd) ? 'color: #FFFFFF;' : ''}};">微博</view>
+              </view>
+            </view>
+            <view class="pz_checklistr_item">
               <view class="pz_checklistr_item_box" bindtap="lockTipsTap">
                 <view class="pz_checklistr_item_cir" style="{{(productFormScore.weixin > 0 || jsonstreamEnd) ? 'border-color: #FFFFFF;' : ''}}">
                   <image class="pz_checklistr_item_ico" hidden="{{productFormScore.weixin > 0}}" mode="scaleToFill" src="../../image/{{productFormIco.weixin}}"></image>
                   <view class="pz_checklistr_score" hidden="{{!productFormScore.weixin > 0}}">{{productFormScore.weixin}}</view>
                 </view>
                 <view class="pz_checklistr_item_name" style="{{(productFormScore.weixin > 0 || jsonstreamEnd) ? 'color: #FFFFFF;' : ''}};">微信</view>
-              </view>
-            </view>
-            <view class="pz_checklistr_item">
-              <view class="pz_checklistr_item_box" bindtap="lockTipsTap">
-                <view class="pz_checklistr_item_cir" style="{{(productFormScore.weibo > 0 || jsonstreamEnd) ? 'border-color: #FFFFFF;' : ''}};">
-                  <image class="pz_checklistr_item_ico" hidden="{{productFormScore.weibo > 0}}" mode="scaleToFill" src="../../image/{{productFormIco.weibo}}"></image>
-                  <view class="pz_checklistr_score" hidden="{{!productFormScore.weibo > 0}}">{{productFormScore.weibo}}</view>
-                </view>
-                <view class="pz_checklistr_item_name" style="{{(productFormScore.weibo > 0 || jsonstreamEnd) ? 'color: #FFFFFF;' : ''}};">微博</view>
               </view>
             </view>
           </view>

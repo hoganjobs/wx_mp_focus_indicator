@@ -14,7 +14,7 @@
     </view>
     <view class="pz_keyword_records_wrap">
       <text wx:if="{{keywordRecords.length > 0}}">查询历史：</text>
-      <view class="pz_keyword_records" data-index="{{keyword}}" catchtap="hotSearchTap" wx:for="{{keywordRecords}}" wx:key="keywordRecordsId" wx:for-item="keyword">{{keyword}}</view>
+      <view class="pz_keyword_records" hover-class="pz_keyword_records_hover" data-index="{{keyword}}" catchtap="hotSearchTap" wx:for="{{keywordRecords}}" wx:key="keywordRecordsId" wx:for-item="keyword">{{keyword}}</view>
       <icon type="cancel" size="20" color="#cccccc" wx:if="{{keywordRecords.length > 0}}" bindtap="clearRecordsTap"/>
     </view>
   </view>

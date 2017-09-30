@@ -7,13 +7,13 @@
 		</view>
 	</view> -->
 	<!-- canvas图表区域 -->
-	<view class="pz_canvas" style="width:{{windowWidth}}px;transform: rotate({{chartsDeg}}deg);" wx:if="{{analysisData.length > 0}}">
+	<view class="pz_canvas" style="width:{{windowWidth}}px;transform: rotate({{chartsDeg}}deg);" wx:if="{{analysisData.list.length > 0}}">
 		<canvas canvas-id="analysisCanvas" disable-scroll="true" class="canvas" style="width:{{windowWidth}}px" bindtouchstart=""></canvas>
-<!-- 		<view class="pz_canvas_fullview" wx:if="{{analysisData.length > 0}}" catchtap="fullviewTap">
+<!-- 		<view class="pz_canvas_fullview" wx:if="{{analysisData.list.length > 0}}" catchtap="fullviewTap">
 			<text>FULL</text>
 		</view> -->
 	</view>
-	<view class="pz_analysis_listr_loading" hidden="{{analysisData.length > 0}}">
+	<view class="pz_analysis_listr_loading" hidden="{{analysisData.list.length > 0}}">
 		<view class="sk-circle">
 		  <view class="sk-circle1 sk-child"></view>
 		  <view class="sk-circle2 sk-child"></view>
@@ -33,13 +33,13 @@
 		</view>
 	</view>
 	<!-- 详情列表区域 -->
-	<view class="pz_analysis_list_wrap" wx:if="{{analysisData.length > 0}}">
+	<view class="pz_analysis_list_wrap" wx:if="{{analysisData.list.length > 0}}">
 		<scroll-view scroll-y style="height:{{scrollHeight}}px;" bindscrolltoupper="" bindscrolltolower="" bindscroll="" scroll-into-view="" scroll-top="">
 			<view class="pz_analysis_list_head" >
-				<!-- <view class="pz_analysis_list_head_right" hover-class="pz_analysis_list_head_right_hover" bindtap="showAllTap">显示全部</view> -->
 				<view class="pz_analysis_list_head_title">焦点头条</view>
+				<view class="pz_analysis_list_head_des">{{analysisData.description}}</view>
 			</view>
-		  <view wx:for="{{analysisData}}" wx:key="analysisId" wx:for-index="idx" wx:for-item="analysisItem">
+		  <view wx:for="{{analysisData.list}}" wx:key="analysisId" wx:for-index="idx" wx:for-item="analysisItem">
 		  	<view class="pz_analysis_list" hover-class="pz_analysis_list_hover" data-id="{{analysisItem.id}}" data-label="{{analysisItem.label}}" data-key="{{analysisItem.key}}" bindtap="analysisDetailTap">
 		  		<view class="pz_analysis_list_left" style="background-color:{{rankColorDefault[analysisItem.key]}};">
 		  			<view class="">{{analysisItem.key}}</view>
@@ -48,9 +48,9 @@
 		  		  <view class="pz_analysis_list_title">{{analysisItem.title}}</view>
 		  		</view>
 		  		<view class="pz_analysis_list_bottom" catchtap="">
-		  			<view class="pz_analysis_list_media">{{analysisItem.media_name}}</view>
+		  			<view class="pz_analysis_list_media">{{analysisItem.media_name_sign}}</view>
 		  			<view class="pz_analysis_list_publish_at">{{analysisItem.publish_at}}</view>
-		  			<view class="pz_analysis_list_right">{{analysisItem.article_num}}条相关 </view>
+		  			<view class="pz_analysis_list_right">{{analysisItem.label_total_media_num}}条相似</view>
 		  		</view>
 		  	</view>
 		  </view>

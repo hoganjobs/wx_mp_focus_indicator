@@ -85,13 +85,20 @@ App({
     webSocketOpen: false, //websocket是否连接的标志
     hostname: 'star.ibiliang.com',
     // hostname: 'wxapp.ibiliang.com',
-    version: '0.17.0922', //websockt服务服务端匹配的版本
+    version: '0.17.0926', //websockt服务服务端匹配的版本
     wsUrl: false, //用于保存服务端分配的websocket访问路径
     keywordVal: '', // 查询的关键词
     keywordRuleVal: '', // 用于保存服务端返回keyword_rule的值
     getStream: true, //用于请求服务端是否需要进度
     searchTitle: '', //用于保存搜索关键词全文的app全局变量
-    NavigationBarTitle: '' //定义导航条标题的app全局变量
+    NavigationBarTitle: '', //定义导航条标题的app全局变量
+    appId: 'wxab348a6c8bc28bac', // 公众号的appID
+    cardId: 'pScawwNi3OUJi0FX5OVSdb0hsuhY', // 卡券ID
+    signatureUrl: 'https://wxapp.ibiliang.com/util/wx/api/v1/public/jssdk/signature', // 获取js-sdk签名的接口地址
+    decryptCodeUrl: 'https://wxapp.ibiliang.com/util/wx/api/v1/public/card/decrypt_code', // 获取解码code的接口地址
+    saveUrl: 'https://wxapp.ibiliang.com/util/wx/api/v1/public/card/save',   // 领取后保存会员卡信息的接口地址
+    memberUrl: 'https://wxapp.ibiliang.com/util/wx/api/v1/public/card/member', // 修改会员积分的接口地址
+    memberCode: '', // 会员卡号
   },
   /**
    * 生命周期函数--监听页面显示

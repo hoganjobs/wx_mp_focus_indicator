@@ -55,31 +55,29 @@ page {
 /*------ 详情列表区域 start ------*/
 .pz_analysis_list_wrap {
 	box-sizing: border-box;
+  margin-top: 5px;
 	/*padding: 15px 15px;*/
 	width: 100%;
 	text-align: left;
 }
 .pz_analysis_list_head {
+  padding: 13px 20px;
   width: 100%;
-  height: 30px;
+  /*height: 30px;*/
   box-sizing: border-box;
-  padding: 0 19px;
-  background-color: #ededed;
-  border-bottom: 2px solid #ededed;
+  background-color: #ffffff;
+  border-bottom: 1px solid #ededed;
 }
 .pz_analysis_list_head_title {
-  line-height: 30px;
-  font-size: 14px;
+  margin-bottom: 8px;
+  line-height: 18px;
+  font-size: 18px;
   color: #1788fb;
 }
-.pz_analysis_list_head_right {
-  float: right;
-  line-height: 28px;
+.pz_analysis_list_head_des {
+  line-height: 22px;
   font-size: 14px;
-  color: #999999;
-}
-.pz_analysis_list_head_right_hover {
-  color: #4d9bfc;
+  color: #777777;
 }
 .pz_analysis_list {
 	width: 100%;
@@ -94,11 +92,11 @@ page {
 }
 .pz_analysis_list_left {
 	float: left;
-  width: 22px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 	margin-top: 4px;
-  border-radius: 3px;
-	line-height: 16px;
+  border-radius: 18px;
+	line-height: 18px;
 	font-size: 16px;
   color: #ffffff;
   /*background-color: #4d9bfc;*/
@@ -107,13 +105,13 @@ page {
   align-items: center;
 }
 .pz_analysis_list_item {
-  margin: 0 60px 0 33px;
+  margin-left: 33px;
   font-size: 14px;
   color: #999999;
 }
 .pz_analysis_list_title {
   font-size: 16px;
-  color: #333333;
+  color: #555555;
 }
 .pz_analysis_list_bottom {
   margin-left: 33px;
@@ -122,13 +120,16 @@ page {
 }
 .pz_analysis_list_media {
   display: inline-block;
+  margin-right: 15px;
 }
 .pz_analysis_list_publish_at {
   display: inline-block;
-  margin-left: 10px;
+  margin-right: 15px;
 }
 .pz_analysis_list_right {
-  float: right;
+  /*float: right;*/
+  margin-right: 15px;
+  display: inline-block;
 /*  line-height: 28px;
   font-size: 14px;
   color: #999999;*/

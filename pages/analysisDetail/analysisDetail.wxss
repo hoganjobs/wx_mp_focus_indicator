@@ -22,116 +22,416 @@ page {
   /*transform: rotate(90deg);*/
 }
 /*------ 详情列表区域 start ------*/
-.pz_analysis_list_area {
+.pz_analysis_listr_area {
+  margin-top: 5px;
   box-sizing: border-box;
   /*padding: 15px 15px;*/
   width: 100%;
   text-align: left;
 }
-.pz_analysis_list_head {
+.pz_analysis_listr_head {
+  width: 100%;
+}
+.pz_analysis_listr_head_top {
+  /*padding-top: 12px;*/
+  padding: 8px 15px 16px 10px;
+  background-color: #ffffff;
+/*  display: flex;
+  justify-content: center;*/
+}
+.pz_analysis_listr_head_title_r {
+  width: 100%;
+  height: 24px;
+  overflow: hidden;
+  position: relative;
+}
+.pz_analysis_listr_head_title {
+  line-height: 26px;
+  font-size: 18px;
+  color: #1788fb;
+  text-align: center;
+/*  overflow:hidden; 
+  text-overflow:ellipsis;
+  display:-webkit-box; 
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;*/
+/*  height: 26px;
+  display: inline-block;*/
+}
+.pz_analysis_listr_head_bottom {
   width: 100%;
   /*height: 40px;*/
   box-sizing: border-box;
-  padding: 10px 10px;
-  background-color: #ededed;
-  display: flex;
-  align-items: center;
-}
-.pz_analysis_list_head_title {
-  margin-left: 10px;
-  display: inline-block;
-  line-height: 16px;
-  font-size: 16px;
-  color: #1788fb;
-}
-.pz_analysis_list_head_count {
-  /*margin-left: 5px;*/
-  display: inline-block;
-  line-height: 16px;
-  font-size: 16px;
-  color: #1788fb;
-}
-.pz_analysis_list_head_right {
-  float: right;
-  line-height: 28px;
-  font-size: 14px;
-  color: #999999;
-}
-.pz_analysis_list_head_right_hover {
-  color: #4d9bfc;
-}
-.pz_analysis_list_des {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0 10px;
-  background-color: #ededed;
-  display: flex;
-  /*justify-content: center;*/
-  align-items: center;
-}
-.pz_analysis_list_des_content {
-  width: 100%;
-  padding: 10px 15px;
   background-color: #ffffff;
-  border-radius: 5px;
-  line-height: 14px;
+  display: flex;
+}
+.pz_analysis_listr_head_left {
+  width: 34px;
+  display: flex;
+}
+.pz_analysis_listr_head_left_i {
+  width: 100%;
+  border-bottom: 1px solid #dddddd;
+}
+.pz_analysis_listr_head_right {
+  flex: 1;
+  /*background-color: #ffffff;*/
+}
+.pz_analysis_listr_head_right_r {
+  border-left: 4px solid #cae2fa;
+}
+.pz_analysis_listr_head_right_i {
+  padding: 0 27px 8px 34px;
+  min-height: 68px;
+  border-bottom: 1px solid #dddddd;
+  position: relative;
+}
+.pz_analysis_listr_head_name {
+  padding-top: 10px;
+  background-color: #ffffff;
+  position: absolute;
+  top: 0px;
+  left: -23px;
+}
+.pz_analysis_listr_head_name_text {
+  width: 42px;
+  height: 42px;
+  border-radius: 42px;
+  background-color: #1788fb;
+  line-height: 42px;
+  font-size: 15px;
+  color: #ffffff;
+  text-align: center;
+}
+.pz_analysis_listr_des {
+  line-height: 21px;
   font-size: 14px;
-  color: #000000;
+  color: #777777;
 }
 .pz_analysis_list_wrap {
-  padding: 13px 10px;
-}
-.pz_analysis_listr {
-
+  width: 100%;
 }
 .pz_analysis_list_item {
-  margin-bottom: 25px;
+  width: 100%;
+}
+.pz_analysis_list_head_wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.pz_analysis_list_head {
+  width: 100%;
+  background-color: #ffffff;
+  display: flex;
+}
+.pz_analysis_list_head_hover{
+  background-color: #f4f3f3;
+}
+.pz_analysis_list_head_left {
+  width: 34px;
+  display: flex;
+}
+.pz_analysis_list_head_left_i {
+  width: 100%;
+  /*border-bottom: 1px solid #ffffff;*/
+  /*background-color: #ffffff;*/
+}
+.pz_analysis_list_head_right {
+  flex: 1;
+  padding-left: 34px;
+  border-left: 4px solid #cae2fa;
+  position: relative;
 }
 .pz_analysis_list_publish_date {
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  margin-left: -23px;
+  text-align: center;
+  border: 1px solid #cae2fa;
+  border-radius: 40px;
+  background-color: #ffffff;
+  position: absolute;
+  top: 50%;
+  left:0;
+}
+.pz_analysis_list_publish_date_bg {
+  width: 40px;
+  height: 40px;
+}
+.pz_analysis_list_publish_date_month{
+  padding-top: 2px;
+  width: 40px;
+  height: 16px;
+/*  border: 1px solid #bcd8f7;
+  border-bottom: 1px solid #ffffff;
+  border-radius: 20px 20px 0 0;*/
   line-height: 14px;
+  font-size: 10px;
+  color: #ffffff;
+  /*background-color: #3a91e7;*/
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.pz_analysis_list_publish_date_day {
+  width: 40px;
+  height: 22px;
+  line-height: 20px;
+  font-size: 14px;
+  color: #348feb;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+.pz_analysis_list_mark {
+  width: 14px;
+  height: 14px;
+  background-color: #f28d3d;
+  border-radius: 14px;
+  text-align: center;
+  line-height: 14px;
+  font-size: 12px;
+  color: #ffffff;
+  position: absolute;
+  bottom: -1px;
+  right: -2px;
+}
+.pz_analysis_list_head_right_i {
+  /*padding: 16px 0 15px 0;*/
+  /*border-bottom: 1px solid #dddddd;*/
+  /*background-color: #ffffff;*/
   display: flex;
   align-items: center;
-}
-.pz_analysis_list_publish_date_text{
-  line-height: 14px;
-  font-size: 14px;
-  color: #999999;
 }
 .pz_analysis_list_item_title {
-  width: 100%;
-  margin-bottom: 15px;
+  flex: 1;
+  padding: 16px 0 15px 0;
   box-sizing: border-box;
-  padding-top: 10px;
-  background-color: #ededed;
-  border-radius: 5px;
-  display: flex;
-  /*justify-content: center;*/
-  align-items: center;
+  position: relative;
 }
 .pz_analysis_list_item_title_text {
-  line-height: 14px;
-  font-size: 14px;
-  color: #999999;
+  margin-bottom: 8px;
+  line-height: 24px;
+  font-size: 16px;
+  color: #555555;
 }
-.pz_analysis_list {
+.pz_analysis_list_item_count {
+  line-height: 13px;
+  font-size: 13px;
+  color: #777777;
+}
+.pz_analysis_list_head_bottom {
+  display: flex;
+  align-items: center;
+}
+.pz_analysis_list_head_bottom_left {
+  flex: 1;
+}
+.pz_analysis_list_wind_grading_i {
+  margin-top: 5px;
+  width: 54px;
+  /*background-color: #00c9f8;*/
+  border: 1px solid #00c9f8;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.pz_analysis_list_wind_level_i {
+  height: 20px;
+  line-height: 20px;
+  font-size: 11px;
+  color: #00c9f8;
+}
+.pz_analysis_list_item_line {
+  width: 100%;
+  height: 1px;
+  background-color: #dddddd;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+.pz_analysis_list_ico {
+  padding-left: 3px;
+  width: 24px;
+  display: flex;
+  justify-content: flex-start;
+}
+.pz_analysis_list_unfold {
+  width: 10px;
+  height: 10px;
+  transform: rotate(45deg);
+}
+.pz_analysis_list_fold {
+  width: 5px;
+  height: 5px;
+  border-top: 1px solid #777777;
+  border-left: 1px solid #777777;
+  transform: rotate(45deg);
+  background-color: blue;
+}
+.pz_analysis_list_content_wrap {
   height: 0;
   overflow: hidden;
 }
+.pz_analysis_list_content {
+  width: 100%;
+  display: flex;
+}
+.pz_analysis_list_cnt_left {
+  width: 34px;
+}
+.pz_analysis_list_cnt_right {
+  flex: 1;
+  padding: 12px 27px 0 34px;
+  border-left: 4px solid #cae2fa;
+}
+.pz_analysis_list_card_wrap {
+  position: relative;
+}
+.pz_analysis_list_card_tr {
+  border-top: 8px solid #ededed;
+  border-right: 10px solid #ffffff;
+  border-bottom: 8px solid #ededed;
+  position: absolute;
+  top: 12px;
+  left: -10px;
+}
+.pz_analysis_list_card_cir {
+  width: 14px;
+  height: 14px;
+  border: 1px solid #ffffff;
+  border-radius: 14px;
+  background-color: #348feb;
+  position: absolute;
+  top: -8px;
+  left: -34px;
+}
 .pz_analysis_list_card {
   margin-bottom: 16px;
-  padding: 18px 15px 10px 15px;
-  background-color: #fff;
+  padding: 16px 18px 16px 18px;
+  background-color: #ffffff;
   box-sizing: border-box;
-  border-radius: 5px;
+  border-radius: 4px;
   box-shadow: 0 4px 12px #d6dde0;
   font-size: 14px;
   color: #333;
   overflow: hidden;
 }
-.pz_analysis_list_hover {
-  background-color: #ededed;
+.pz_analysis_list_card_top {
+  margin-bottom: 6px;
 }
-.pz_analysis_list_top {
+.pz_analysis_list_title {
+  line-height: 24px;
+  font-size: 16px;
+  color: #555555;
+}
+.pz_analysis_list_card_bottom {
+
+}
+.pz_analysis_list_media_name {
+  display: inline-block;
+  line-height: 20px;
+  font-size: 13px;
+  color: #777777;
+}
+.pz_analysis_list_point {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 0 4px;
+  border: 1px solid #ff5435;
+  border-radius: 4px;
+  line-height: 18px;
+  font-size: 11px;
+  color: #ff5435;
+}
+.pz_analysis_list_wind_level {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 0 4px;
+  border: 1px solid #00c9f8;
+  border-radius: 4px;
+  line-height: 18px;
+  font-size: 11px;
+  color: #00c9f8;
+}
+.pz_analysis_list_wind_grading {
+  float: right;
+  margin-top: 2px;
+  height: 20px;
+  padding: 0px 7px;
+  /*background-color: #00c9f8;*/
+  border: 1px solid #00c9f8;
+  border-radius: 4px;
+}
+/*.pz_analysis_list_wind_level {
+  line-height: 20px;
+  font-size: 11px;
+  color: #00c9f8;
+}*/
+.pz_analysis_listr_footer {
+  width: 100%;
+  display: flex;
+  background-color: #ffffff;
+}
+.pz_analysis_listr_footer_left {
+  width: 34px;
+  display: flex;
+}
+.pz_analysis_listr_footer_left_i {
+  width: 100%;
+  border-top: 1px solid #dddddd;
+}
+.pz_analysis_listr_footer_right {
+  flex: 1;
+}
+.pz_analysis_listr_footer_right_r {
+  border-left: 4px solid #cae2fa;
+}
+.pz_analysis_listr_footer_right_i {
+  padding: 10px 27px 8px 34px;
+  min-height: 68px;
+  border-top: 1px solid #dddddd;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.pz_analysis_listr_footer_name {
+  margin-top:-21px;
+  margin-left:-23px;
+  padding-bottom: 22px;
+  background-color: #ffffff;
+  position: absolute;
+  top: 50%;
+  left: 0;
+}
+.pz_analysis_listr_footer_name_text {
+  width: 42px;
+  height: 42px;
+  border-radius: 42px;
+  background-color:#1788fb;
+  line-height: 42px;
+  font-size: 15px;
+  color: #ffffff;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.pz_analysis_list_footer_bg {
+  width: 14px;
+  height: 14px;
+}
+.pz_analysis_listr_footer_des {
+  line-height: 10px;
+  font-size: 10px;
+  color: #555555;
+}
+/*.pz_analysis_list_top {
   display: flex;
   padding-bottom: 15px;
 }
@@ -207,19 +507,6 @@ page {
   margin-left: 15px;
   padding-top: 3px;
 }
-.pz_analysis_list_mark {
-  /*float: right;*/
-  display: inline-block;
-  margin-right: 14px;
-  width: 22px;
-  height: 18px;
-  background-color: #f28d3d;
-  border-radius: 4px;
-  text-align: center;
-  line-height: 18px;
-  font-size: 16px;
-  color: #ffffff;
-}
 .pz_analysis_list_wind_grading {
   width: 49px;
   background-color: #1ecaf6;
@@ -260,7 +547,7 @@ page {
   line-height: 11px;
   font-size: 10px;
   color: #fff;
-}
+}*/
 
 /*----------- last style start ------------*/
 

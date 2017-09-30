@@ -71,7 +71,8 @@ page {
   top: 0;
 }
 .pz_search_btn_hover {
-  /*background-color: #0E6BBA;*/
+  background-color: #0d60a7;
+  color: #e5e5e5;
 }
 button::after {
   border: #fff
@@ -130,6 +131,10 @@ button::after {
   border-color: none;
   border-radius: 4px;
   background-color: #188BD0;
+}
+.pz_keyword_records_hover {
+  background-color: #167dbb;
+  color: #e5e5e5;
 }
 /*search input end*/
 

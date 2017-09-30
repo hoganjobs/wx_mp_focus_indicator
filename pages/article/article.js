@@ -118,10 +118,10 @@ Page({
           // "id": "59910023482ff75050b6e290"}
 
           // 过滤无法解析的unicode编码\u2028、\u2029
-          for (let key in result) {
-            if (result[key].abstract) {
-              result[key].abstract = result[key].abstract.replace('\u2028', '')
-              result[key].abstract = result[key].abstract.replace('\u2029', '')
+          for (let key in result.list) {
+            if (result.list[key].abstract) {
+              result.list[key].abstract = result.list[key].abstract.replace('\u2028', '')
+              result.list[key].abstract = result.list[key].abstract.replace('\u2029', '')
             }
           }
           // 截取时间，只显示到年月日
@@ -136,9 +136,9 @@ Page({
             })
           } catch (error) {
             console.log(error)
-            for (let key in result) {
-              if (result[key].abstract) {
-                result[key].abstract = ''
+            for (let key in result.list) {
+              if (result.list[key].abstract) {
+                result.list[key].abstract = ''
               }
             }
             self.setData({
@@ -235,7 +235,7 @@ Page({
   onReady: function (options) {
     console.log('article onReady')
     let searchTitle = app.globalData.searchTitle
-    let navTitle = '"' + searchTitle + '"' + '焦点指数（详情）'
+    let navTitle = '"' + searchTitle + '"' + '媒体报道'
     //动态设置当前页面导航条的标题
     wx.setNavigationBarTitle({
       title: navTitle,

@@ -32,7 +32,7 @@ Page({
       bbs: 'icon_forum.svg',
       app: 'icon_new.svg',
       weixin: 'icon_lock.svg',
-      weibo: 'icon_lock.svg'
+      weibo: 'icon_weibo.svg'
     },
     productFormScore: { //分类分数
       app: 0,

@@ -14,6 +14,7 @@ Page({
     resultArticleLoadNextShowed: true,
     resultArticleNoDataShowed: true,
     resultArticleFailDataShowed: true,
+    topTitleBarShowed: true, // 
     // analysisBtnShowed: true, //用于控制焦点分析按钮显示状态
     titleFixed: false, // 用于控制媒体观点标题栏顶部定位
     titleOffsetTop: 0, // 用于存储媒体观点标题栏上边界距离
@@ -22,7 +23,7 @@ Page({
       portals: true,
       search_engine: true,
       weixin: false,
-      weibo: false,
+      weibo: true,
       bbs: true
     },
     keywordVal: '',
@@ -33,7 +34,7 @@ Page({
       bbs: 'icon_forum.svg',
       app: 'icon_new.svg',
       weixin: 'icon_lock.svg',
-      weibo: 'icon_lock.svg'
+      weibo: 'icon_weibo.svg'
     },
     productFormScoreCal: {
       app: 0,
@@ -59,6 +60,7 @@ Page({
     toView: 'inToView01',
     map: {}, //定义一个对象用于存储列表数据不同项分类（日期排序）
     analysisBtnAnimationData: {}, // 定义焦点分析按钮的动画对象
+    createdUser: false, // 用户是否创建
   },
   scrollToViewFn: function (e) { 
    this.setData({ 
@@ -108,19 +110,352 @@ Page({
   },
 
   /**
+   * 获取用户信息
+   */
+  getUser: function() { 
+    var self = this
+    console.log('result getUser')
+    let open_id = app.globalData.openid // 用户openID
+    let get_userInfo_url = 'https://wxapp.ibiliang.com/util/wx/api/v1/user?open_id=' + open_id
+    // 获取用户信息接口
+    wx.request({
+      url: get_userInfo_url, // 接口地址
+      method: 'GET',
+      success: function(res) {
+        console.log('getUser res.data', res.data)
+        if (res.data.user_info !== null) {
+          self.setData({
+            createdUser: true
+          })
+        }
+      },
+      fail: function (error) {
+        console.log('获取用户信息失败！')
+        console.log('get_userinfo_url error', error)
+      }
+    })
+  },
+
+  /**
+   * PhoneNumber解码，获取用户手机号码
+   */
+  getPhoneNumber: function(e) { 
+    console.log(e.detail.errMsg) 
+    console.log(e.detail.iv) 
+    console.log(e.detail.encryptedData)
+    var self = this
+    if (e.detail.encryptedData) {
+      let hostname = app.globalData.hostname
+      let session_key = app.globalData.session_key
+      let phoneNumberEncryptedData = e.detail.encryptedData
+      let phoneNumberIv = e.detail.iv
+      let decrypt_url = 'https://' + hostname + '/api/v1/decrypt'
+      let create_userInfo_url = 'https://wxapp.ibiliang.com/util/wx/api/v1/user'
+      let open_id = app.globalData.openid // 用户openID
+      let keyword_rule = app.globalData.keywordRuleVal
+      keyword_rule = JSON.stringify(keyword_rule)
+      let analysisReport_url = '../../pages/analysisReport/analysisReport?keyword_rule=' + keyword_rule
+      let data = {
+        app: 'focus-indicator',
+        session_key: session_key,
+        encrypted_data: phoneNumberEncryptedData,
+        iv: phoneNumberIv
+      }
+      // 发起网络请求，上传session_key、shareInfoEncryptedData等信息
+      wx.request({
+        url: decrypt_url,
+        method: 'POST',
+        data: data,
+        success: function(res) {
+          console.log('getPhoneNumber request decrypt_url:',decrypt_url)
+          console.log('getPhoneNumber解码网络请求成功', res)
+          console.log('getPhoneNumber request data:',res.data)
+          if (res.data.result) {
+            let phone_data = {
+              "app_id": 'wx9ea0feeb75ed925f', //
+              "open_id": open_id, //
+              "telephone": res.data.data.phoneNumber // 用户绑定的手机号（国外手机号会有区号）
+            }
+            console.log('create_userInfo_url', create_userInfo_url)
+            console.log('phone_data', phone_data)
+            // 创建用户信息接口
+            wx.request({
+              url: create_userInfo_url, // 接口地址
+              method: 'POST',
+              data: phone_data,
+              success: function(resp) {
+                console.log('创建用户成功！')
+                console.log('resp.data', resp.data)
+                self.setData({
+                  createdUser: true
+                })
+                // 跳转页面到焦点分析页
+                wx.navigateTo({
+                  url: analysisReport_url,
+                  success: function() {
+                    console.log('analysisTap analysisReport_url:', analysisReport_url)
+                  }
+                })
+              },
+              fail: function (error) {
+                console.log('创建用户失败！')
+                console.log('create_userinfo_url error', error)
+              }
+            })
+          }
+        }
+      })
+    } else {
+      // 提示用户手动激活会员卡
+      wx.showModal({
+        title: '获取手机号失败！',
+        content: '提示：该功能需要获取手机号注册开通！',
+        showCancel: false,
+        success: function(res) {
+          if (res.confirm) {
+            console.log('用户点击确定')
+          } else if (res.cancel) {
+            console.log('用户点击取消')
+          }
+        }
+      })
+    }
+  },
+
+  /**
    * 媒体观点分析点击事件，跳转到分析报告页面
    */
   analysisTap: function (event) {
+    var self = this
     console.log('analysisTap', event)
     let keyword_rule = app.globalData.keywordRuleVal
     keyword_rule = JSON.stringify(keyword_rule)
-    let url = '../../pages/analysisReport/analysisReport?keyword_rule=' + keyword_rule
+    let analysisReport_url = '../../pages/analysisReport/analysisReport?keyword_rule=' + keyword_rule
+    let open_id = app.globalData.openid // 用户openID
+    let card_id = app.globalData.cardId // 卡券ID
+    let card_url = 'https://wxapp.ibiliang.com/util/wx/api/v1/public/mini_program/user/card?mini_open_id=' + open_id + '&card_id=' + card_id // 获取是否已领取会员卡的接口地址
+    console.log('card_url', card_url)
+    let create_userInfo_url = 'https://wxapp.ibiliang.com/util/wx/api/v1/user'
+    let get_userInfo_url = 'https://wxapp.ibiliang.com/util/wx/api/v1/user?open_id=' + open_id
+    // 通过小程序openId和cardId获取是否已领取会员卡
+    // wx.request({
+    //   url: card_url, //接口地址
+    //   success: function(res) {
+    //     console.log('card_url', res.data)
+    //     if (res.data.card_list.length < 1) {
+    //       console.log('no membership card')
+    //       // 执行领取会员卡流程
+    //       self.getMembershipCard();
+    //     } else {
+    //       // 更新会员卡号数据
+    //       if (res.data.card_list[0]) {
+    //         app.globalData.memberCode = res.data.card_list[0].user_card_code;
+    //         // 判断是否已经激活会员卡
+    //         if (res.data.card_list[0].user_card_status === 'normal' && res.data.card_list[0].has_active) {
+    //           // 跳转页面到焦点分析页
+    //           wx.navigateTo({
+    //             url: analysisReport_url,
+    //             success: function() {
+    //               console.log('analysisTap analysisReport_url:', analysisReport_url)
+    //             }
+    //           })
+    //         } else {
+    //           let cardCode = res.data.card_list[0].user_card_code
+    //           // 查看微信卡包中的卡券
+    //           wx.openCard({
+    //             cardList: [
+    //               {
+    //                 cardId: card_id, // 卡券id
+    //                 code: cardCode // 卡号，用解密后的code
+    //               }
+    //             ],
+    //             success: function(respons) {
+    //               console.log('查看微信卡包中的卡券成功！')
+    //               console.log('openCard success', respons)
+    //             },
+    //             fail: function(error) {
+    //               console.log('查看微信卡包中的卡券失败！')
+    //               console.log('openCard error', error)
+    //               // 提示用户手动激活会员卡
+    //               wx.showModal({
+    //                 title: '会员卡已经创建成功，请前往激活！打开微信，进入【我】->【卡包】->选择【会员卡】下的会员卡->点击【激活会员卡】！',
+    //                 content: '',
+    //                 showCancel: false,
+    //                 success: function(res) {
+    //                   if (res.confirm) {
+    //                     console.log('用户点击确定')
+    //                   } else if (res.cancel) {
+    //                     console.log('用户点击取消')
+    //                   }
+    //                 }
+    //               })
+    //             }
+    //           })
+    //         }
+    //       }
+    //     }
+    //   },
+    //   fail: function (error) {
+    //     console.log('判断会员卡领取情况失败！')
+    //     console.log('card_url error', error)
+    //   }
+    // })
+
+    // 跳转页面到焦点分析页
     wx.navigateTo({
-      url: url,
+      url: analysisReport_url,
       success: function() {
-        console.log('analysisTap url:', url)
+        console.log('analysisTap analysisReport_url:', analysisReport_url)
       }
     })
+  },
+
+  /*
+  * 领取会员卡
+  * 
+  */
+  getMembershipCard: function() {
+    var self = this
+    console.log('result getMembershipCard')
+    // let timestamp = (new Date()).valueOf(); // 获取时间戳，单位为毫秒
+    let timestamp = Date.parse(new Date())/1000; // 获取时间戳，单位为秒
+    let nonce_str = this.randomWord(false, 32) // 生成32位随机串
+    let app_id = app.globalData.appId // 公众号的appID
+    let open_id = app.globalData.openid // 用户openID
+    let card_id = app.globalData.cardId // 卡券ID
+    let signature_url = app.globalData.signatureUrl // 获取js-sdk签名的接口地址
+    let decryptCode_url = app.globalData.decryptCodeUrl // 获取解码code的接口地址
+    let save_url = app.globalData.saveUrl   // 领取后保存会员卡信息的接口地址
+    let signature = ''
+    let signature_data = {
+      "app_id": app_id, // 公众号appid
+      "type": "card", // 卡券签名
+      "timestamp": timestamp, // 时间戳
+      "nonce_str": nonce_str, // 随机字符串
+      "card_id": card_id, // 卡券id
+    }
+    console.log('signature_data', signature_data)
+    // 获取js-sdk签名
+    wx.request({
+      url: signature_url, //接口地址
+      method: 'POST',
+      data: signature_data,
+      success: function(resp) {
+        console.log('signature', resp.data)
+        signature = resp.data.signature;
+        let cardExt = {
+          "timestamp": timestamp, // 时间戳
+          "nonce_str": nonce_str, // 随机字符串
+          "signature": signature, // 卡券签名
+        }
+        console.log('cardExt',cardExt)
+        // 添加卡券
+        wx.addCard({
+          cardList: [
+            {
+              cardId: card_id,
+              cardExt: JSON.stringify(cardExt)
+            }
+          ],
+          success: function(respo) {
+            console.log('respo.cardList', respo.cardList) // 卡券添加结果
+
+            let encrypt_code = respo.cardList[0].code // 加密code，为用户领取到卡券的code加密后的字符串
+            console.log('encrypt_code', encrypt_code)
+            // code解码
+            wx.request({
+              url: decryptCode_url, // code解码地址
+              method: 'POST',
+              data: {
+                "app_id": app_id, // 公众号appid
+                "encrypt_code": encrypt_code  // 加密code
+              },
+              success: function(respon) {
+                console.log('respon.data', respon.data)
+                let decryptCode = respon.data.code
+                // 保存会员卡信息接口
+                wx.request({
+                  url: save_url, // 接口地址
+                  method: 'POST',
+                  data: {
+                    "mini_open_id": open_id, // 小程序openid
+                    "card_id": card_id, // 卡券id
+                    "code": decryptCode // 卡号，用解密后的code
+                  },
+                  success: function(res) {
+                    console.log('res.data', res.data)
+                    // 查看微信卡包中的卡券
+                    wx.openCard({
+                      cardList: [
+                        {
+                          cardId: card_id, // 卡券id
+                          code: decryptCode // 卡号，用解密后的code
+                        }
+                      ],
+                      success: function(respons) {
+                        console.log('查看微信卡包中的卡券成功！')
+                        console.log('openCard success', respons)
+                      },
+                      fail: function(error) {
+                        console.log('查看微信卡包中的卡券失败！')
+                        console.log('openCard error', error)
+                        // 提示用户手动激活会员卡
+                        wx.showModal({
+                          title: '会员卡已经创建成功，请前往激活！打开微信，进入【我】->【卡包】->选择【会员卡】下的会员卡->点击【激活会员卡】！',
+                          content: '',
+                          showCancel: false,
+                          success: function(res) {
+                            if (res.confirm) {
+                              console.log('用户点击确定')
+                            } else if (res.cancel) {
+                              console.log('用户点击取消')
+                            }
+                          }
+                        })
+                      }
+                    })
+                  },
+                  fail: function (error) {
+                    console.log('保存会员卡失败！')
+                    console.log('save_url error', error)
+                  }
+                })
+              },
+              fail: function (error) {
+                console.log('解码失败！')
+                console.log('decryptCode_url error', error)
+              }
+            })
+          }
+        })
+      },
+      fail: function (error) {
+        console.log('获取js-sdk签名失败！')
+        console.log('signature_url error', error)
+      }
+    })
+  },
+
+  /*
+  * randomWord 产生任意长度随机字母数字组合
+  * randomFlag-是否任意长度 min-任意长度最小位[固定位数] max-任意长度最大位
+  * 例：生成3-32位随机串：randomWord(true, 3, 32)
+  * 例：生成43位随机串：randomWord(false, 43)
+  */
+  randomWord: function(randomFlag, min, max) {
+    var str = "",
+      range = min,
+      arr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+
+    // 随机产生
+    if (randomFlag) {
+      range = Math.round(Math.random() * (max - min)) + min;
+    }
+    for (var i = 0; i < range; i++) {
+      let pos = Math.round(Math.random() * (arr.length - 1));
+      str += arr[pos];
+    }
+    return str;
   },
 
   /**
@@ -148,7 +483,8 @@ Page({
           self.setData({
             finalCrisisScore: scores.total_score,
             pfScore: scores.pf_score,
-            titleSignCount: scores.title_sign_count
+            titleSignCount: scores.title_sign_count,
+            mediaCount: scores.media_count
           });
         }
       },
@@ -161,77 +497,77 @@ Page({
   /**
    * 通过 WebSocket 连接发送消息，获取列表
    */
-  getTitleSignJsonrpc: function () {
-    var self = this
-    let keyword_rule = app.globalData.keywordRuleVal
-    let skip = this.data.skip
-    let source_keyword = app.globalData.keywordRuleVal.source_keyword
-    let condition = {"keyword_rule": keyword_rule, "skip": skip}
-    let openid = app.globalData.openid
-    RequestUtil.call(
-      'media_vane_title_sign_list', 
-      {
-        "keyword": source_keyword,
-        "condition": condition,
-        "document_id": openid
-      }, 
-      function(result) {
-        console.log('successCb media_vane_title_sign_list', result)
-        if (result) {
-          try {
-            let articles = result;
-            // result为false显示加载失败
-            if (articles.result == false) {
-              self.setData({
-                resultArticleLoadShowed: true,
-                resultArticleFailDataShowed: false
-              });
-            }
-            // 没有列表数据显示暂无数据
-            if (articles.length == 0) {
-              self.setData({
-                resultArticleLoadShowed: true,
-                resultArticleNoDataShowed: false
-              });
-            }
-            // 正常显示列表数据
-            if (articles.length > 0) {
-              // 截取时间，只显示到年月日
-              for (var i = 0; i < articles.length; i++) {
-                let date = articles[i].publish_at.slice(0, 10)
-                articles[i].publish_at = date
-              }
-              try {
-                self.setData({
-                  resultArticleLoadShowed: true,
-                  resultArticleFailDataShowed: true,
-                  resultArticleData: articles
-                });
-              } catch (err) {
-                console.log(err)
-              }
-              self.data.skip = skip + 100
-            }
-          } catch (error) {
-            console.log(error)
-            self.setData({
-              resultArticleLoadShowed: true,
-              resultArticleFailDataShowed: false
-            });
-          }
-        }
-        else {
-          self.setData({
-            resultArticleLoadShowed: true,
-            resultArticleFailDataShowed: false
-          });
-        }
-      },
-      function(error) {
-        console.log('errorCb media_vane_title_sign_list', error)
-      }
-    )
-  },
+  // getTitleSignJsonrpc: function () {
+  //   var self = this
+  //   let keyword_rule = app.globalData.keywordRuleVal
+  //   let skip = this.data.skip
+  //   let source_keyword = app.globalData.keywordRuleVal.source_keyword
+  //   let condition = {"keyword_rule": keyword_rule, "skip": skip}
+  //   let openid = app.globalData.openid
+  //   RequestUtil.call(
+  //     'media_vane_title_sign_list', 
+  //     {
+  //       "keyword": source_keyword,
+  //       "condition": condition,
+  //       "document_id": openid
+  //     }, 
+  //     function(result) {
+  //       console.log('successCb media_vane_title_sign_list', result)
+  //       if (result) {
+  //         try {
+  //           let articles = result;
+  //           // result为false显示加载失败
+  //           if (articles.result == false) {
+  //             self.setData({
+  //               resultArticleLoadShowed: true,
+  //               resultArticleFailDataShowed: false
+  //             });
+  //           }
+  //           // 没有列表数据显示暂无数据
+  //           if (articles.length == 0) {
+  //             self.setData({
+  //               resultArticleLoadShowed: true,
+  //               resultArticleNoDataShowed: false
+  //             });
+  //           }
+  //           // 正常显示列表数据
+  //           if (articles.length > 0) {
+  //             // 截取时间，只显示到年月日
+  //             for (var i = 0; i < articles.length; i++) {
+  //               let date = articles[i].publish_at.slice(0, 10)
+  //               articles[i].publish_at = date
+  //             }
+  //             try {
+  //               self.setData({
+  //                 resultArticleLoadShowed: true,
+  //                 resultArticleFailDataShowed: true,
+  //                 resultArticleData: articles
+  //               });
+  //             } catch (err) {
+  //               console.log(err)
+  //             }
+  //             self.data.skip = skip + 100
+  //           }
+  //         } catch (error) {
+  //           console.log(error)
+  //           self.setData({
+  //             resultArticleLoadShowed: true,
+  //             resultArticleFailDataShowed: false
+  //           });
+  //         }
+  //       }
+  //       else {
+  //         self.setData({
+  //           resultArticleLoadShowed: true,
+  //           resultArticleFailDataShowed: false
+  //         });
+  //       }
+  //     },
+  //     function(error) {
+  //       console.log('errorCb media_vane_title_sign_list', error)
+  //     }
+  //   )
+  // },
 
   /**
    * 通过 WebSocket 连接发送消息，获取列表数据，实现上拉刷新列表
@@ -240,87 +576,87 @@ Page({
    * 2、单次设置的数据不能超过1024kB，请尽量避免一次设置过多的数据。
    * 这里设置当列表数据 titleSignCount 大于400条时开始第二个数组及模版接收列表数据。
    */
-  loadTitleSignJsonrpc: function () {
-    var self = this
-    let keyword_rule = app.globalData.keywordRuleVal
-    let skip = this.data.skip
-    let source_keyword = app.globalData.keywordRuleVal.source_keyword
-    let condition = {"keyword_rule": keyword_rule, "skip": skip}
-    let openid = app.globalData.openid
-    let titleSignCount = this.data.titleSignCount
-    let resultArticleData = this.data.resultArticleData
-    let resultArticleData2 = this.data.resultArticleData2
-    let listDataLength = resultArticleData.length + resultArticleData2.length
-    if (listDataLength < titleSignCount && listDataLength < 600) {
-      this.setData({
-        resultArticleLoadShowed: false
-      });
-      RequestUtil.call(
-        'media_vane_title_sign_list', 
-        {
-          "keyword": source_keyword,
-          "condition": condition,
-          "document_id": openid
-        }, 
-        function(result) {
-          console.log('successCb media_vane_title_sign_list ', result)
-          // for (let key in result) {
-          //   if (result[key].abstract) {
-          //     result[key].abstract = ''
-          //   }
-          // } 
-          if (result) {
-            try {
-              let articles = result;
-              if (result.result == false) {
-                self.setData({
-                  resultArticleLoadShowed: true
-                });
-                return
-              }
-              for (var i = 0; i < articles.length; i++) {
-                let date = articles[i].publish_at.slice(0, 10)
-                articles[i].publish_at = date
-              }
-              if (listDataLength < 400) {
-                self.setData({
-                  resultArticleData: resultArticleData.concat(articles),
-                  resultArticleLoadShowed: true
-                });
-              }
-              else if (listDataLength > 399 && listDataLength < 800) {
-                try {
-                  self.setData({
-                    resultArticleData2: resultArticleData2.concat(articles),
-                    resultArticleLoadShowed: true
-                  });
-                } catch (err) {
-                  console.log(err)
-                  self.setData({
-                    resultArticleLoadShowed: true
-                  });
-                }
-              }
-              self.data.skip = skip + 100
-            } catch (error) {
-              console.log(error)
-              self.setData({
-                resultArticleLoadShowed: true
-              });
-            }
-          }
-        },
-        function(error) {
-          console.log('errorCb media_vane_title_sign_list', error)
-        }
-      )
-    }
-    // else if (listDataLength > 899) {
-    //   this.setData({
-    //     resultArticleLoadShowed: true
-    //   });
-    // }
-  },
+  // loadTitleSignJsonrpc: function () {
+  //   var self = this
+  //   let keyword_rule = app.globalData.keywordRuleVal
+  //   let skip = this.data.skip
+  //   let source_keyword = app.globalData.keywordRuleVal.source_keyword
+  //   let condition = {"keyword_rule": keyword_rule, "skip": skip}
+  //   let openid = app.globalData.openid
+  //   let titleSignCount = this.data.titleSignCount
+  //   let resultArticleData = this.data.resultArticleData
+  //   let resultArticleData2 = this.data.resultArticleData2
+  //   let listDataLength = resultArticleData.length + resultArticleData2.length
+  //   if (listDataLength < titleSignCount && listDataLength < 600) {
+  //     this.setData({
+  //       resultArticleLoadShowed: false
+  //     });
+  //     RequestUtil.call(
+  //       'media_vane_title_sign_list', 
+  //       {
+  //         "keyword": source_keyword,
+  //         "condition": condition,
+  //         "document_id": openid
+  //       }, 
+  //       function(result) {
+  //         console.log('successCb media_vane_title_sign_list ', result)
+  //         // for (let key in result) {
+  //         //   if (result[key].abstract) {
+  //         //     result[key].abstract = ''
+  //         //   }
+  //         // } 
+  //         if (result) {
+  //           try {
+  //             let articles = result;
+  //             if (result.result == false) {
+  //               self.setData({
+  //                 resultArticleLoadShowed: true
+  //               });
+  //               return
+  //             }
+  //             for (var i = 0; i < articles.length; i++) {
+  //               let date = articles[i].publish_at.slice(0, 10)
+  //               articles[i].publish_at = date
+  //             }
+  //             if (listDataLength < 400) {
+  //               self.setData({
+  //                 resultArticleData: resultArticleData.concat(articles),
+  //                 resultArticleLoadShowed: true
+  //               });
+  //             }
+  //             else if (listDataLength > 399 && listDataLength < 800) {
+  //               try {
+  //                 self.setData({
+  //                   resultArticleData2: resultArticleData2.concat(articles),
+  //                   resultArticleLoadShowed: true
+  //                 });
+  //               } catch (err) {
+  //                 console.log(err)
+  //                 self.setData({
+  //                   resultArticleLoadShowed: true
+  //                 });
+  //               }
+  //             }
+  //             self.data.skip = skip + 100
+  //           } catch (error) {
+  //             console.log(error)
+  //             self.setData({
+  //               resultArticleLoadShowed: true
+  //             });
+  //           }
+  //         }
+  //       },
+  //       function(error) {
+  //         console.log('errorCb media_vane_title_sign_list', error)
+  //       }
+  //     )
+  //   }
+  //   // else if (listDataLength > 899) {
+  //   //   this.setData({
+  //   //     resultArticleLoadShowed: true
+  //   //   });
+  //   // }
+  // },
 
   /**
    * 通过 WebSocket 连接发送消息，获取最新缓存版本号，用于判断列表数据是否更新
@@ -427,7 +763,7 @@ Page({
   },
 
   /**
-   * 通过 WebSocket 连接发送消息，获取
+   * 通过 WebSocket 连接发送消息，获取列表数据
    */
   getTitleSignListJsonrpc: function () {
     var self = this
@@ -460,6 +796,10 @@ Page({
       },
       function(res) {
         console.log('getTitleSignListJsonrpc errorCb:', res)
+        self.setData({
+          resultArticleLoadShowed: true,
+          resultArticleNoDataShowed: false
+        })
       }
     );
   },
@@ -626,6 +966,13 @@ Page({
         }
         // 更新用于存储列表不同项分类的数据
         this.data.map = map
+        // 增加对象成员count，用于统计对应日期内相同文章条数
+        for (let i = 0; i < dest.length; i++) {
+          dest[i].count = 0
+          for (let j = 0; j < dest[i].data.length; j++) {
+            dest[i].count += dest[i].data[j].media_num;
+          }
+        }
         // 更新页面数据
         try {
           this.setData({
@@ -735,6 +1082,13 @@ Page({
         }
         // 更新用于存储列表不同项分类的数据
         this.data.map = map
+        // 增加对象成员count，用于统计对应日期内相同文章条数
+        for (let i = 0; i < dest.length; i++) {
+          dest[i].count = 0
+          for (let j = 0; j < dest[i].data.length; j++) {
+            dest[i].count += dest[i].data[j].media_num;
+          }
+        }
         // 更新页面列表数据
         try {
           this.setData({
@@ -844,9 +1198,16 @@ Page({
     setTimeout(function() {
       this.setData({
         analysisBtnAnimationData:animation.export(),
-        analysisBtnShadowAnimationData: animationShadow.export()
+        analysisBtnShadowAnimationData: animationShadow.export(),
       })
     }.bind(this), 100)
+
+    // 延时3500毫秒后执行,即等待动画执行完成后,开启焦点分析按钮可点击
+    setTimeout(function() {
+      this.setData({
+        analysisTapBind: true
+      })
+    }.bind(this), 3500)
   },
 
   /**
@@ -857,6 +1218,8 @@ Page({
     console.log(options)
     // 获取媒体观点标题栏节点信息
     this.getArticleTitleRect()
+    // 获取用户是否创建
+    // this.getUser()
     // 设置可滚动视图区域高度为设备可使用设备窗口高度
     // this.setData({
     //   windowHeight: app.globalData.systemInfo.windowHeight
@@ -995,12 +1358,14 @@ Page({
       // 判断滚动位置
       if (scrollTop > titleOffsetTop) {
         this.setData({
-          titleFixed: true
+          titleFixed: true,
+          // topTitleBarShowed: false,
         })
         // console.log('result onPageScroll titleFixed true')
       } else if (scrollTop < titleOffsetTop) {
         this.setData({
-          titleFixed: false
+          titleFixed: false,
+          // topTitleBarShowed: true,
         })
         // console.log('result onPageScroll titleFixed false')
       }

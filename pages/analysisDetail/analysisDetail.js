@@ -16,8 +16,11 @@ Page({
     rank: [],
     // rankColor: ['#f28d3d', '#6b489c', '#e15b74', '#58b8ad', '#7573b4', '#88cdf1', '#FF6666', '#FF9900', '#99CC33', '#33CC99'], // 设置标注的可选颜色
     rankColorDefault: {A:'#f28d3d', B:'#6b489c', C:'#e15b74', D:'#58b8ad', E:'#7573b4', F:'#88cdf1', G:'#FF6666', H:'#FF9900', I:'#99CC33', J:'#33CC99'}, // 设置标注的可选颜色
-    titleSignCount: 0,
-    unfoldAnimationData: {}
+    titleSignCount: null,
+    unfoldAnimationData: {}, // 定义展开动画对象
+    titleAnimationData: {}, // 定义动画对象
+    unfold: {}, // 用于控制列表展开标志的箭头图标
+    // le: 37
   },
 
   /**
@@ -33,6 +36,7 @@ Page({
     let cntId = '#cnt' + id
     let itemHeight = null
     let cntHeight = null
+    let unfold = this.data.unfold
 
     // 创建动画实例
     var animation = wx.createAnimation({
@@ -59,20 +63,28 @@ Page({
       }, function(res){
         cntHeight = res.height; // 节点的高度
         console.log('cntHeight', cntHeight)
-        if (itemHeight !== 0) {
-          self.animation = animation
-          // hide，设置高度为0，实现折叠隐藏
-          self.animation.height(0).step({timingFunction: 'ease-out'})
-          self.setData({
-            unfoldAnimationData: animation.export()
-          })
-        } else {
-          self.animation = animation
-          // show，设置到指定的高度，实现展开显示
-          self.animation.height(cntHeight).step({ duration: cntHeight*3, timingFunction: 'ease'})
-          self.setData({
-            unfoldAnimationData: animation.export()
-          })
+        if (cntHeight !== 0) {
+          if (itemHeight !== 0) {
+            // 改变展开图标，为向下
+            unfold[id] = -1;
+            self.animation = animation
+            // hide，设置高度为0，实现折叠隐藏
+            self.animation.height(0).step({timingFunction: 'ease-out'})
+            self.setData({
+              unfoldAnimationData: animation.export(),
+              unfold: unfold
+            })
+          } else {
+            // 改变展开图标，为向上
+            unfold[id] = id;
+            self.animation = animation
+            // show，设置到指定的高度，实现展开显示
+            self.animation.height(cntHeight).step({timingFunction: 'ease'})
+            self.setData({
+              unfoldAnimationData: animation.export(),
+              unfold: unfold
+            })
+          }
         }
       }).exec()
     }).exec()
@@ -242,8 +254,7 @@ Page({
     let keyword_rule = app.globalData.keywordRuleVal
     let condition = {"keyword_rule": keyword_rule, "label": label}
     let openid = app.globalData.openid
-    // let label = '坚 瑞 沃能 回应 财报 数据 更新'
-    // let label = '百度 败诉 赔 大众 点评 323 万'
+    // let label = '中国 372 家 网警 账号 入驻'
     // let source_keyword = '百度'
     // let keyword_rule = {"source_keyword":"百度","and_keyword":[],"not_keyword":[]}
     // let condition = {"keyword_rule": keyword_rule, "label": label}
@@ -341,7 +352,7 @@ Page({
           canvasHeight = 0;
           canvasShowed = false;
         }
-        let scrollHeight = windowHeight - canvasHeight // 减去canvas图表高度
+        let scrollHeight = windowHeight - canvasHeight - 5 // 减去canvas图表高度
         // 设置scroll-view的高度
         this.setData({
           canvasShowed: canvasShowed,
@@ -385,14 +396,26 @@ Page({
         //   }
         // }
         // console.log('dest', dest)
+        // json数组数据分类分组处理
+        // 遍历json数组中每一个对象数据
+        for (let i = 0; i < listData.group_list.length; i++) {
+          // 截取月份部分，创建月份字段并赋值
+          listData.group_list[i].month = listData.group_list[i].date.slice(5, 7);
+          // 截取日期部分，创建日期字段并赋值
+          listData.group_list[i].day = listData.group_list[i].date.slice(8, 10);
+        }
         console.log('listData:', listData)
         // 更新页面列表数据
         this.setData({
-          // titleSignCount: listData.length,
+          titleSignCount: listData.group_list.length,
           analysisData: listData
         })
         // scroll-into-view锚点到指定位置
         // this.inToView(dest) 
+        // 动画
+        setTimeout(function() {
+          this.titleAnimation()
+        }.bind(this), 1000)
       }
     // }
   },
@@ -402,6 +425,35 @@ Page({
    */
   onJsonstreamEnd: function (data) {
 
+  },
+
+  /**
+   * 列表标题文字的动画。
+   */ 
+  titleAnimation: function(){
+    console.log('result titleAnimation')
+    var self = this
+    let windowWidth = this.data.windowWidth
+    // 创建按钮部分的动画实例
+    var animation = wx.createAnimation({
+      duration: 3000,
+      timingFunction: 'linear',
+    })
+    // 获取节点的相关信息，需要获取的字段在fields中指定。
+    wx.createSelectorQuery().select('#headTitleId').fields({
+      size: true // 返回节点尺寸（width height）
+    }, function(res){
+      // res.width; // 节点的宽度
+      self.animation = animation
+      // 动画，先右移，然后左移回原位置，重复多次实现效果
+      for (var i = 0; i < 100; i++) {
+        animation.translateX(-(res.width-windowWidth+36)).step();
+        animation.translateX(0).step();
+      }
+      self.setData({
+        titleAnimationData:animation.export()
+      })
+    }).exec()
   },
 
   /**
@@ -424,9 +476,9 @@ Page({
     // this.setData({
     //   scrollHeight: scrollHeight
     // })
-    let key = this.data.key
+    // let key = this.data.key
     let searchTitle = app.globalData.searchTitle
-    let navTitle = '"' + searchTitle + '"' + '焦点分析（' + key + '）'
+    let navTitle = '"' + searchTitle + '"' + '观点分析'
     //动态设置当前页面导航条的标题
     wx.setNavigationBarTitle({
       title: navTitle,
