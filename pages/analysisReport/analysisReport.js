@@ -626,7 +626,7 @@ Page({
       },
       function(end) {
         console.log('end data', end);
-        // that.onJsonstreamEnd(end)
+        that.onJsonstreamEnd(end)
       }
     )
   },
@@ -661,8 +661,10 @@ Page({
     // if (this.data.stream_id == data.data.stream_id) {
       // 判断data_type是否为虚拟数据
       if (data_type == 'fi_report_added_chart') {
-        // 绘制图表
-        this.wxCharts(data.data)
+        if (data.data.series.ALL.length > 0) {
+          // 绘制图表
+          this.wxCharts(data.data)
+        }
         // 绘制全屏显示的图表
         // this.wxChartsFull(data.data)
         // this.updateChartData(data.data)
@@ -685,7 +687,9 @@ Page({
    * 针对websocket服务端发送消息，Jsonstream的End消息事件处理
    */
   onJsonstreamEnd: function (data) {
-
+    this.setData({
+      analysisLoadShowed: true
+    })
   },
 
   /**

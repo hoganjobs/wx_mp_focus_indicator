@@ -13,7 +13,7 @@
 			<text>FULL</text>
 		</view> -->
 	</view>
-	<view class="pz_analysis_listr_loading" hidden="{{analysisData.list.length > 0}}">
+	<view class="pz_analysis_listr_loading" hidden="{{analysisLoadShowed}}">
 		<view class="sk-circle">
 		  <view class="sk-circle1 sk-child"></view>
 		  <view class="sk-circle2 sk-child"></view>
@@ -33,7 +33,7 @@
 		</view>
 	</view>
 	<!-- 详情列表区域 -->
-	<view class="pz_analysis_list_wrap" wx:if="{{analysisData.list.length > 0}}">
+	<view class="pz_analysis_list_wrap" hidden="{{!analysisLoadShowed}}">
 		<scroll-view scroll-y style="height:{{scrollHeight}}px;" bindscrolltoupper="" bindscrolltolower="" bindscroll="" scroll-into-view="" scroll-top="">
 			<view class="pz_analysis_list_head" >
 				<view class="pz_analysis_list_head_title">焦点头条</view>
